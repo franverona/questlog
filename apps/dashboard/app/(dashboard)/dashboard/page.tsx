@@ -1,5 +1,5 @@
-import { get } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { get } from '@/lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type StatsData = {
   totalEvents: number;
@@ -18,7 +18,7 @@ async function getStats(): Promise<StatsData> {
 }
 
 export default async function DashboardPage() {
-  const stats = await getStats();
+  const stats = await getStats()
 
   return (
     <div className="space-y-6">
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
         <StatCard title="Active Users" value={stats.totalActiveUsers} description="Users with points" />
       </div>
     </div>
-  );
+  )
 }
 
 function StatCard({
@@ -55,5 +55,5 @@ function StatCard({
         {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
       </CardContent>
     </Card>
-  );
+  )
 }

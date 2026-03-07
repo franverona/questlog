@@ -1,5 +1,5 @@
-import { get } from "@/lib/api";
-import { AchievementsClient } from "./achievements-client";
+import { get } from '@/lib/api'
+import { AchievementsClient } from './achievements-client'
 
 export type AchievementRow = {
   id: string;
@@ -11,11 +11,11 @@ export type AchievementRow = {
 };
 
 async function getAchievements(): Promise<AchievementRow[]> {
-  const res = await get<AchievementRow[]>("/v1/achievements").catch(() => ({ data: [] }));
-  return res.data;
+  const res = await get<AchievementRow[]>('/v1/achievements').catch(() => ({ data: [] }))
+  return res.data
 }
 
 export default async function AchievementsPage() {
-  const achievements = await getAchievements();
-  return <AchievementsClient initialAchievements={achievements} />;
+  const achievements = await getAchievements()
+  return <AchievementsClient initialAchievements={achievements} />
 }

@@ -1,14 +1,14 @@
-import { Hono } from "hono";
-import type { Db } from "@questlog/db";
-import { userAchievements, achievements } from "@questlog/db";
-import { eq, sql, desc } from "drizzle-orm";
+import { Hono } from 'hono'
+import type { Db } from '@questlog/db'
+import { userAchievements, achievements } from '@questlog/db'
+import { eq, sql, desc } from 'drizzle-orm'
 
 type Env = { Variables: { db: Db } };
 
-export const leaderboardRouter = new Hono<Env>();
+export const leaderboardRouter = new Hono<Env>()
 
-leaderboardRouter.get("/", async (c) => {
-  const db = c.get("db");
+leaderboardRouter.get('/', async (c) => {
+  const db = c.get('db')
 
   const rows = await db
     .select({
@@ -19,13 +19,13 @@ leaderboardRouter.get("/", async (c) => {
     .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
     .groupBy(userAchievements.externalUserId)
     .orderBy(desc(sql`sum(${achievements.points})`))
-    .limit(20);
+    .limit(20)
 
   const ranked = rows.map((row, i) => ({
     rank: i + 1,
     external_user_id: row.external_user_id,
     total_points: row.total_points,
-  }));
+  }))
 
-  return c.json({ data: ranked, error: null, meta: null });
-});
+  return c.json({ data: ranked, error: null, meta: null })
+})

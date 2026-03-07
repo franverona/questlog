@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { ConditionBuilder } from "./condition-builder";
-import type { RuleRow, AchievementOption } from "./page";
-import type { Condition } from "@questlog/types";
+} from '@/components/ui/dialog'
+import { ConditionBuilder } from './condition-builder'
+import type { RuleRow, AchievementOption } from './page'
+import type { Condition } from '@questlog/types'
 
 type Props = {
   initialRules: RuleRow[];
@@ -28,100 +28,100 @@ type Props = {
 };
 
 function conditionSummary(cond: unknown): string {
-  const c = cond as Condition;
-  if (c.type === "event_count")
-    return `${c.event_name} ≥ ${c.threshold}×`;
-  if (c.type === "streak")
-    return `${c.event_name} streak ≥ ${c.days} days`;
-  if (c.type === "combination")
-    return `${c.operator}(${c.conditions.map(conditionSummary).join(", ")})`;
-  return "Unknown";
+  const c = cond as Condition
+  if (c.type === 'event_count')
+    return `${c.event_name} ≥ ${c.threshold}×`
+  if (c.type === 'streak')
+    return `${c.event_name} streak ≥ ${c.days} days`
+  if (c.type === 'combination')
+    return `${c.operator}(${c.conditions.map(conditionSummary).join(', ')})`
+  return 'Unknown'
 }
 
 // Group rules by achievement
 function groupByAchievement(rules: RuleRow[]) {
-  const map = new Map<string, { name: string; rules: RuleRow[] }>();
+  const map = new Map<string, { name: string; rules: RuleRow[] }>()
   for (const rule of rules) {
-    const existing = map.get(rule.achievementId);
+    const existing = map.get(rule.achievementId)
     if (existing) {
-      existing.rules.push(rule);
+      existing.rules.push(rule)
     } else {
-      map.set(rule.achievementId, { name: rule.achievementName, rules: [rule] });
+      map.set(rule.achievementId, { name: rule.achievementName, rules: [rule] })
     }
   }
-  return [...map.entries()].map(([id, v]) => ({ id, ...v }));
+  return [...map.entries()].map(([id, v]) => ({ id, ...v }))
 }
 
 const DEFAULT_CONDITION: Condition = {
-  type: "event_count",
-  event_name: "",
+  type: 'event_count',
+  event_name: '',
   threshold: 1,
-};
+}
 
 export function RulesClient({ initialRules, achievements }: Props) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<RuleRow | null>(null);
-  const [achievementId, setAchievementId] = useState("");
-  const [condition, setCondition] = useState<Condition>(DEFAULT_CONDITION);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<RuleRow | null>(null)
+  const [achievementId, setAchievementId] = useState('')
+  const [condition, setCondition] = useState<Condition>(DEFAULT_CONDITION)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const grouped = groupByAchievement(initialRules);
+  const grouped = groupByAchievement(initialRules)
 
   function openCreate() {
-    setEditing(null);
-    setAchievementId(achievements[0]?.id ?? "");
-    setCondition(DEFAULT_CONDITION);
-    setError("");
-    setOpen(true);
+    setEditing(null)
+    setAchievementId(achievements[0]?.id ?? '')
+    setCondition(DEFAULT_CONDITION)
+    setError('')
+    setOpen(true)
   }
 
   function openEdit(rule: RuleRow) {
-    setEditing(rule);
-    setAchievementId(rule.achievementId);
-    setCondition(rule.condition as Condition);
-    setError("");
-    setOpen(true);
+    setEditing(rule)
+    setAchievementId(rule.achievementId)
+    setCondition(rule.condition as Condition)
+    setError('')
+    setOpen(true)
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
     if (!achievementId) {
-      setError("Please select an achievement");
-      return;
+      setError('Please select an achievement')
+      return
     }
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
 
     try {
-      const url = editing ? `/api/rules/${editing.id}` : "/api/rules";
-      const method = editing ? "PUT" : "POST";
+      const url = editing ? `/api/rules/${editing.id}` : '/api/rules'
+      const method = editing ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ achievementId, condition }),
-      });
+      })
 
       if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.error?.message ?? d.message ?? "Request failed");
+        const d = await res.json()
+        throw new Error(d.error?.message ?? d.message ?? 'Request failed')
       }
 
-      setOpen(false);
-      router.refresh();
+      setOpen(false)
+      router.refresh()
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this rule?")) return;
-    await fetch(`/api/rules/${id}`, { method: "DELETE" });
-    router.refresh();
+    if (!confirm('Delete this rule?')) return
+    await fetch(`/api/rules/${id}`, { method: 'DELETE' })
+    router.refresh()
   }
 
   return (
@@ -168,7 +168,7 @@ export function RulesClient({ initialRules, achievements }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Rule" : "New Rule"}</DialogTitle>
+            <DialogTitle>{editing ? 'Edit Rule' : 'New Rule'}</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -200,12 +200,12 @@ export function RulesClient({ initialRules, achievements }: Props) {
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : editing ? "Update" : "Create"}
+                {loading ? 'Saving...' : editing ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 const links = [
-  { href: "/dashboard", label: "Overview" },
-  { href: "/achievements", label: "Achievements" },
-  { href: "/rules", label: "Rules" },
-  { href: "/users", label: "Users" },
-];
+  { href: '/dashboard', label: 'Overview' },
+  { href: '/achievements', label: 'Achievements' },
+  { href: '/rules', label: 'Rules' },
+  { href: '/users', label: 'Users' },
+]
 
 export function NavBar() {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = usePathname()
+  const router = useRouter()
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh();
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+    router.refresh()
   }
 
   return (
@@ -33,10 +33,10 @@ export function NavBar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors hover:bg-accent",
+                  'px-3 py-1.5 rounded-md text-sm font-medium transition-colors hover:bg-accent',
                   pathname === link.href
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground'
                 )}
               >
                 {link.label}
@@ -49,5 +49,5 @@ export function NavBar() {
         </Button>
       </div>
     </header>
-  );
+  )
 }

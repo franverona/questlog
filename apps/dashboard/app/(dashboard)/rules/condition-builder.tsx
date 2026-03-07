@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import type { Condition } from "@questlog/types";
+} from '@/components/ui/select'
+import type { Condition } from '@questlog/types'
 
-type ConditionType = "event_count" | "streak" | "combination";
+type ConditionType = 'event_count' | 'streak' | 'combination';
 
 interface Props {
   condition: Condition;
@@ -22,21 +22,21 @@ interface Props {
 
 function defaultCondition(type: ConditionType): Condition {
   switch (type) {
-    case "event_count":
-      return { type: "event_count", event_name: "", threshold: 1 };
-    case "streak":
-      return { type: "streak", event_name: "", days: 7 };
-    case "combination":
+    case 'event_count':
+      return { type: 'event_count', event_name: '', threshold: 1 }
+    case 'streak':
+      return { type: 'streak', event_name: '', days: 7 }
+    case 'combination':
       return {
-        type: "combination",
-        operator: "AND",
-        conditions: [{ type: "event_count", event_name: "", threshold: 1 }],
-      };
+        type: 'combination',
+        operator: 'AND',
+        conditions: [{ type: 'event_count', event_name: '', threshold: 1 }],
+      }
   }
 }
 
 export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
-  const indent = depth * 16;
+  const indent = depth * 16
 
   return (
     <div
@@ -60,7 +60,7 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
         </Select>
       </div>
 
-      {condition.type === "event_count" && (
+      {condition.type === 'event_count' && (
         <>
           <div className="space-y-1">
             <Label>Event name</Label>
@@ -84,7 +84,7 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
         </>
       )}
 
-      {condition.type === "streak" && (
+      {condition.type === 'streak' && (
         <>
           <div className="space-y-1">
             <Label>Event name</Label>
@@ -108,14 +108,14 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
         </>
       )}
 
-      {condition.type === "combination" && (
+      {condition.type === 'combination' && (
         <>
           <div className="space-y-1">
             <Label>Operator</Label>
             <Select
               value={condition.operator}
               onValueChange={(val) =>
-                onChange({ ...condition, operator: val as "AND" | "OR" })
+                onChange({ ...condition, operator: val as 'AND' | 'OR' })
               }
             >
               <SelectTrigger>
@@ -137,9 +137,9 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
                     condition={sub}
                     depth={depth + 1}
                     onChange={(updated) => {
-                      const newConditions = [...condition.conditions];
-                      newConditions[i] = updated;
-                      onChange({ ...condition, conditions: newConditions });
+                      const newConditions = [...condition.conditions]
+                      newConditions[i] = updated
+                      onChange({ ...condition, conditions: newConditions })
                     }}
                   />
                 </div>
@@ -150,8 +150,8 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
                   className="mt-2"
                   disabled={condition.conditions.length <= 1}
                   onClick={() => {
-                    const newConditions = condition.conditions.filter((_, idx) => idx !== i);
-                    onChange({ ...condition, conditions: newConditions });
+                    const newConditions = condition.conditions.filter((_, idx) => idx !== i)
+                    onChange({ ...condition, conditions: newConditions })
                   }}
                 >
                   Remove
@@ -168,7 +168,7 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
                   ...condition,
                   conditions: [
                     ...condition.conditions,
-                    { type: "event_count", event_name: "", threshold: 1 },
+                    { type: 'event_count', event_name: '', threshold: 1 },
                   ],
                 })
               }
@@ -179,5 +179,5 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
         </>
       )}
     </div>
-  );
+  )
 }

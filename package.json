@@ -10,6 +10,7 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
     "lint": "eslint .",
     "db:migrate": "turbo run db:migrate --filter=@questlog/db",
     "db:seed": "turbo run db:seed --filter=@questlog/db",

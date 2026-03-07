@@ -1,36 +1,36 @@
 // TODO: Migrate to Auth.js (next-auth) for production-grade authentication.
 // Currently uses a simple hardcoded API_SECRET check.
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-const SESSION_COOKIE = "questlog_session";
+const SESSION_COOKIE = 'questlog_session'
 
 export async function getSession() {
-  const cookieStore = await cookies();
-  return cookieStore.get(SESSION_COOKIE)?.value ?? null;
+  const cookieStore = await cookies()
+  return cookieStore.get(SESSION_COOKIE)?.value ?? null
 }
 
 export async function requireAuth() {
-  const session = await getSession();
+  const session = await getSession()
   if (!session) {
-    redirect("/login");
+    redirect('/login')
   }
-  return session;
+  return session
 }
 
 export async function createSession() {
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, "authenticated", {
+  const cookieStore = await cookies()
+  cookieStore.set(SESSION_COOKIE, 'authenticated', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  });
+    path: '/',
+  })
 }
 
 export async function destroySession() {
-  const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE);
+  const cookieStore = await cookies()
+  cookieStore.delete(SESSION_COOKIE)
 }

@@ -1,5 +1,5 @@
-import { get } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { get } from '@/lib/api'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type StatsData = {
   totalEvents: number;
@@ -9,21 +9,21 @@ type StatsData = {
 
 async function getStats(): Promise<StatsData> {
   const [achievementsRes, leaderboardRes] = await Promise.all([
-    get<{ id: string }[]>("/v1/achievements").catch(() => ({ data: [] })),
-    get<{ external_user_id: string; total_points: number }[]>("/v1/leaderboard").catch(() => ({
+    get<{ id: string }[]>('/v1/achievements').catch(() => ({ data: [] })),
+    get<{ external_user_id: string; total_points: number }[]>('/v1/leaderboard').catch(() => ({
       data: [],
     })),
-  ]);
+  ])
 
   return {
     totalEvents: 0, // Tracked separately; API doesn't expose a count endpoint
     totalAchievements: achievementsRes.data.length,
     totalActiveUsers: leaderboardRes.data.length,
-  };
+  }
 }
 
 export default async function DashboardPage() {
-  const stats = await getStats();
+  const stats = await getStats()
 
   return (
     <div className="space-y-6">
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         <StatCard title="Leaderboard Size" value={stats.totalActiveUsers} description="Ranked users" />
       </div>
     </div>
-  );
+  )
 }
 
 function StatCard({
@@ -60,5 +60,5 @@ function StatCard({
         {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
       </CardContent>
     </Card>
-  );
+  )
 }

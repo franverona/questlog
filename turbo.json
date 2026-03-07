@@ -16,6 +16,9 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
     "db:migrate": {
       "cache": false
     },

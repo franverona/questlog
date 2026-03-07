@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from 'react'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type Achievement = {
   id: string;
@@ -28,44 +28,44 @@ type UserData = {
 };
 
 export function UsersClient() {
-  const [userId, setUserId] = useState("");
-  const [query, setQuery] = useState("");
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [userId, setUserId] = useState('')
+  const [query, setQuery] = useState('')
+  const [userData, setUserData] = useState<UserData | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (!query.trim()) return;
+    e.preventDefault()
+    if (!query.trim()) return
 
-    setLoading(true);
-    setError("");
-    setUserData(null);
+    setLoading(true)
+    setError('')
+    setUserData(null)
 
     try {
       const [achRes, eventsRes] = await Promise.all([
         fetch(`/api/users/${encodeURIComponent(query)}/achievements`),
         fetch(`/api/users/${encodeURIComponent(query)}/events`),
-      ]);
+      ])
 
       if (!achRes.ok || !eventsRes.ok) {
-        throw new Error("Failed to load user data");
+        throw new Error('Failed to load user data')
       }
 
       const [achData, eventsData] = await Promise.all([
         achRes.json(),
         eventsRes.json(),
-      ]);
+      ])
 
-      setUserId(query);
+      setUserId(query)
       setUserData({
         achievements: achData.data ?? [],
         events: eventsData.data ?? [],
-      });
+      })
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -83,7 +83,7 @@ export function UsersClient() {
           placeholder="user_alice"
         />
         <Button type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Search"}
+          {loading ? 'Loading...' : 'Search'}
         </Button>
       </form>
 
@@ -145,5 +145,5 @@ export function UsersClient() {
         </div>
       )}
     </div>
-  );
+  )
 }

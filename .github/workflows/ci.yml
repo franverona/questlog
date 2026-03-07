@@ -16,6 +16,10 @@ on:
       - ".gitignore"
       - "docker-compose.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     name: Lint, Build & Test

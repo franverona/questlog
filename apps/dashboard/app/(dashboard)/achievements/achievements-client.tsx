@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateAchievementSchema, type CreateAchievement } from "@questlog/types";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,7 +100,7 @@ export function AchievementsClient({ initialAchievements }: Props) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 {a.iconUrl && (
-                  <img src={a.iconUrl} alt="" className="w-8 h-8" />
+                  <Image src={a.iconUrl} alt="" width={32} height={32} />
                 )}
                 <h3 className="font-semibold">{a.name}</h3>
               </div>

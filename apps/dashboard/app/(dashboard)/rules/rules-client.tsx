@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { ConditionBuilder } from "./condition-builder";
 import type { RuleRow, AchievementOption } from "./page";
 import type { Condition } from "@questlog/types";

@@ -1,6 +1,6 @@
 import type { Db } from "@questlog/db";
 import { rules, userAchievements, userEvents, achievements } from "@questlog/db";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import type { Condition } from "@questlog/types";
 
 export type Achievement = {

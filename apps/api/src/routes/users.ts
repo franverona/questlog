@@ -3,7 +3,6 @@ import { userAchievements, userEvents, achievements, rules } from "@questlog/db"
 import type { Db } from "@questlog/db";
 import { eq, desc } from "drizzle-orm";
 import type { Condition } from "@questlog/types";
-import { evalCondition } from "../rule-engine.js";
 
 type Env = { Variables: { db: Db } };
 

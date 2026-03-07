@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { evalCondition } from "../rule-engine.js";
 import type { EventRow } from "../rule-engine.js";
 import type { Condition } from "@questlog/types";

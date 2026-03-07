@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -109,7 +109,7 @@ export function UsersClient() {
                       key={a.id}
                       className="flex items-center gap-2 border rounded-md px-3 py-1.5 bg-muted text-sm"
                     >
-                      {a.iconUrl && <img src={a.iconUrl} alt="" className="w-4 h-4" />}
+                      {a.iconUrl && <Image src={a.iconUrl} alt="" width={16} height={16} />}
                       <span className="font-medium">{a.name}</span>
                       <Badge variant="secondary" className="text-xs">{a.points} pts</Badge>
                     </div>

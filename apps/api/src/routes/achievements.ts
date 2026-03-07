@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import type { Db } from "@questlog/db";
-import { achievements, rules } from "@questlog/db";
+import { achievements } from "@questlog/db";
 import { eq } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
-import { CreateAchievementSchema, CreateRuleSchema } from "@questlog/types";
+import { CreateAchievementSchema } from "@questlog/types";
 
 type Env = { Variables: { db: Db } };
 

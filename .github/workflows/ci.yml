@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".nvmrc"
+      - ".gitignore"
+      - "docker-compose.yml"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".nvmrc"
+      - ".gitignore"
+      - "docker-compose.yml"
+
+jobs:
+  ci:
+    name: Lint, Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Required by Next.js build — values don't need to be real for a build check
+          API_SECRET: ci-secret
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          DATABASE_URL: postgresql://localhost/ci
+
+      - name: Test
+        run: npm test

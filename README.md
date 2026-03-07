@@ -11,18 +11,27 @@ A full-stack Gamification-as-a-Service platform with a REST API and management d
 | Database | PostgreSQL + Drizzle ORM |
 | Monorepo | Turborepo |
 | Language | TypeScript everywhere |
+| Linting | ESLint 10 (flat config) |
+| Commits | Conventional Commits via commitlint |
+| Git hooks | Husky + lint-staged |
+| CI | GitHub Actions |
 
 ## Project structure
 
 ```
 questlog/
+├── .github/
+│   └── workflows/
+│       └── ci.yml         GitHub Actions CI
 ├── apps/
-│   ├── api/           Hono REST API
-│   └── dashboard/     Next.js dashboard
+│   ├── api/               Hono REST API
+│   └── dashboard/         Next.js dashboard
 ├── packages/
-│   ├── db/            Drizzle schema + migrations
-│   └── types/         Zod schemas + shared TS types
+│   ├── db/                Drizzle schema + migrations
+│   └── types/             Zod schemas + shared TS types
 ├── docker-compose.yml
+├── eslint.config.mjs
+├── commitlint.config.mjs
 └── .env.example
 ```
 
@@ -30,7 +39,7 @@ questlog/
 
 ### 1. Prerequisites
 
-- Node.js ≥ 20
+- Node.js 24.12.0 (use `.nvmrc`: `nvm use`)
 - Docker (for Postgres)
 
 ### 2. Configure environment
@@ -230,5 +239,34 @@ cd apps/api && npm test
 | `npm run dev` | Start API + dashboard in parallel |
 | `npm run build` | Build all packages |
 | `npm run test` | Run all tests |
+| `npm run lint` | Run ESLint across all packages |
 | `npm run db:migrate` | Apply pending migrations |
 | `npm run db:seed` | Seed demo data |
+
+---
+
+## Git workflow
+
+Commits must follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add leaderboard endpoint
+fix: correct streak calculation off-by-one
+chore: update dependencies
+docs: update API reference
+```
+
+The `commit-msg` hook rejects commits that don't match this format.
+
+The `pre-commit` hook runs ESLint via lint-staged on all staged `.ts`/`.tsx` files before every commit.
+
+---
+
+## CI
+
+GitHub Actions runs on every push and pull request to `main` (skipped for changes to non-code files like markdown). The pipeline runs:
+
+1. `npm ci` — install dependencies
+2. `npm run lint` — ESLint
+3. `npm run build` — Turborepo build (API tsc + Next.js build)
+4. `npm test` — Vitest unit tests

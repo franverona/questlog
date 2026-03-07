@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@questlog/types"],
+  // Next.js 16 defaults to Turbopack; turbopack resolves .js→.ts natively.
+  turbopack: {},
   webpack: (config) => {
     // Allow webpack to resolve .js imports as .ts/.tsx when consuming
     // TypeScript ESM packages that use explicit .js extensions (Node16/NodeNext).

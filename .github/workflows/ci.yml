@@ -39,9 +39,15 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Typecheck
+        run: npm run typecheck
+        env:
+          TURBO_TELEMETRY_DISABLED: 1
+
       - name: Build
         run: npm run build
         env:
+          TURBO_TELEMETRY_DISABLED: 1
           # Required by Next.js build — values don't need to be real for a build check
           API_SECRET: ci-secret
           NEXT_PUBLIC_API_URL: http://localhost:3001
@@ -49,3 +55,5 @@ jobs:
 
       - name: Test
         run: npm test
+        env:
+          TURBO_TELEMETRY_DISABLED: 1

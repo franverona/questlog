@@ -67,5 +67,22 @@ describe('GET /v1/stats', () => {
     const body = await res.json() as StatsResponse
     expect(body.data.total_events).toBe(0)
     expect(body.data.total_achievements).toBe(5)
+    expect(body.data.total_users_with_achievements).toBe(3)
+  })
+
+  it('falls back to 0 when a query returns null count', async () => {
+    const db = {
+      select: vi.fn().mockReturnValue({
+        from: vi.fn()
+          .mockResolvedValueOnce([{ count: null }])   // userEvents — null
+          .mockResolvedValueOnce([{ count: 5 }])
+          .mockResolvedValueOnce([{ count: 3 }]),
+      }),
+    }
+    const res = await makeApp(db).request('/')
+    const body = await res.json() as StatsResponse
+    expect(body.data.total_events).toBe(0)
+    expect(body.data.total_achievements).toBe(5)
+    expect(body.data.total_users_with_achievements).toBe(3)
   })
 })

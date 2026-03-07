@@ -7,7 +7,7 @@ A full-stack Gamification-as-a-Service platform with a REST API and management d
 | Layer | Tech |
 |---|---|
 | API | Hono + Node.js (port 3001) |
-| Dashboard | Next.js 15 App Router (port 3000) |
+| Dashboard | Next.js 16 App Router (port 3000) |
 | Database | PostgreSQL + Drizzle ORM |
 | Monorepo | Turborepo |
 | Language | TypeScript everywhere |

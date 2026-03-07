@@ -4,7 +4,7 @@
 
 Gamification-as-a-Service platform. Turborepo monorepo with:
 - `apps/api` — Hono REST API (port 3001)
-- `apps/dashboard` — Next.js 15 App Router dashboard (port 3000)
+- `apps/dashboard` — Next.js 16 App Router dashboard (port 3000)
 - `packages/db` — Drizzle ORM schema + migrations
 - `packages/types` — Zod schemas and inferred TypeScript types shared across all packages
 

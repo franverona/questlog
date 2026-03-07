@@ -62,7 +62,7 @@ export const CreateAchievementSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   iconUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  points: z.number().int().nonnegative().default(0),
+  points: z.number().int().nonnegative(),
 });
 
 export type CreateAchievement = z.infer<typeof CreateAchievementSchema>;
@@ -90,7 +90,7 @@ export type CreateRule = z.infer<typeof CreateRuleSchema>;
 export const TrackEventSchema = z.object({
   external_user_id: z.string().min(1, "external_user_id is required"),
   event_name: z.string().min(1, "event_name is required"),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type TrackEvent = z.infer<typeof TrackEventSchema>;

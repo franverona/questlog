@@ -8,18 +8,13 @@ type StatsData = {
 };
 
 async function getStats(): Promise<StatsData> {
-  const [achievementsRes, leaderboardRes] = await Promise.all([
-    get<{ id: string }[]>("/v1/achievements").catch(() => ({ data: [] })),
-    get<{ external_user_id: string; total_points: number }[]>("/v1/leaderboard").catch(() => ({
-      data: [],
-    })),
-  ]);
+  const response = await get<{ total_events: number; total_achievements: number; total_users_with_achievements: number }>('/v1/stats')
 
   return {
-    totalEvents: 0, // Tracked separately; API doesn't expose a count endpoint
-    totalAchievements: achievementsRes.data.length,
-    totalActiveUsers: leaderboardRes.data.length,
-  };
+    totalEvents: response.data.total_events,
+    totalAchievements: response.data.total_achievements,
+    totalActiveUsers: response.data.total_users_with_achievements,
+  }
 }
 
 export default async function DashboardPage() {
@@ -34,8 +29,8 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard title="Total Achievements" value={stats.totalAchievements} />
+        <StatCard title="Total Events" value={stats.totalEvents} />
         <StatCard title="Active Users" value={stats.totalActiveUsers} description="Users with points" />
-        <StatCard title="Leaderboard Size" value={stats.totalActiveUsers} description="Ranked users" />
       </div>
     </div>
   );

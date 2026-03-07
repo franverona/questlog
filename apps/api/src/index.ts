@@ -1,14 +1,15 @@
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
-import { createDb } from "@questlog/db";
-import { apiKeyAuth } from "./middleware/auth.js";
-import { errorHandler } from "./middleware/error-handler.js";
-import { requestLogger } from "./middleware/logger.js";
-import { eventsRouter } from "./routes/events.js";
-import { usersRouter } from "./routes/users.js";
-import { leaderboardRouter } from "./routes/leaderboard.js";
-import { achievementsRouter } from "./routes/achievements.js";
-import { rulesRouter } from "./routes/rules.js";
+import { serve } from '@hono/node-server'
+import { Hono } from 'hono'
+import { createDb } from '@questlog/db'
+import { apiKeyAuth } from './middleware/auth.js'
+import { errorHandler } from './middleware/error-handler.js'
+import { requestLogger } from './middleware/logger.js'
+import { eventsRouter } from './routes/events.js'
+import { usersRouter } from './routes/users.js'
+import { leaderboardRouter } from './routes/leaderboard.js'
+import { achievementsRouter } from './routes/achievements.js'
+import { rulesRouter } from './routes/rules.js'
+import { statsRouter } from './routes/stats.js'
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -35,11 +36,12 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 const v1 = new Hono<Env>();
 v1.use("*", apiKeyAuth());
 
-v1.route("/events", eventsRouter);
-v1.route("/users", usersRouter);
-v1.route("/leaderboard", leaderboardRouter);
-v1.route("/achievements", achievementsRouter);
-v1.route("/rules", rulesRouter);
+v1.route('/events', eventsRouter)
+v1.route('/users', usersRouter)
+v1.route('/leaderboard', leaderboardRouter)
+v1.route('/achievements', achievementsRouter)
+v1.route('/rules', rulesRouter)
+v1.route('/stats', statsRouter)
 
 app.route("/v1", v1);
 

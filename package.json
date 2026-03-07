@@ -16,7 +16,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --max-warnings=0"
+    "*.{ts,tsx}": "eslint --max-warnings=0 --no-warn-ignored"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",

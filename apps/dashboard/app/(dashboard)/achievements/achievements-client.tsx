@@ -1,83 +1,83 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateAchievementSchema, type CreateAchievement } from "@questlog/types";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CreateAchievementSchema, type CreateAchievement } from '@questlog/types'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import type { AchievementRow } from "./page";
+} from '@/components/ui/dialog'
+import type { AchievementRow } from './page'
 
 type Props = { initialAchievements: AchievementRow[] };
 
 export function AchievementsClient({ initialAchievements }: Props) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<AchievementRow | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<AchievementRow | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const form = useForm<CreateAchievement>({
     resolver: zodResolver(CreateAchievementSchema),
-    defaultValues: { name: "", description: "", iconUrl: "", points: 0 },
-  });
+    defaultValues: { name: '', description: '', iconUrl: '', points: 0 },
+  })
 
   function openCreate() {
-    setEditing(null);
-    form.reset({ name: "", description: "", iconUrl: "", points: 0 });
-    setError("");
-    setOpen(true);
+    setEditing(null)
+    form.reset({ name: '', description: '', iconUrl: '', points: 0 })
+    setError('')
+    setOpen(true)
   }
 
   function openEdit(a: AchievementRow) {
-    setEditing(a);
+    setEditing(a)
     form.reset({
       name: a.name,
-      description: a.description ?? "",
-      iconUrl: a.iconUrl ?? "",
+      description: a.description ?? '',
+      iconUrl: a.iconUrl ?? '',
       points: a.points,
-    });
-    setError("");
-    setOpen(true);
+    })
+    setError('')
+    setOpen(true)
   }
 
   async function onSubmit(values: CreateAchievement) {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
     try {
       const url = editing
         ? `/api/achievements/${editing.id}`
-        : "/api/achievements";
-      const method = editing ? "PUT" : "POST";
+        : '/api/achievements'
+      const method = editing ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
-      });
+      })
 
       if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.message ?? "Request failed");
+        const d = await res.json()
+        throw new Error(d.message ?? 'Request failed')
       }
 
-      setOpen(false);
-      router.refresh();
+      setOpen(false)
+      router.refresh()
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -127,13 +127,13 @@ export function AchievementsClient({ initialAchievements }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Achievement" : "New Achievement"}</DialogTitle>
+            <DialogTitle>{editing ? 'Edit Achievement' : 'New Achievement'}</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
-              <Input id="name" {...form.register("name")} />
+              <Input id="name" {...form.register('name')} />
               {form.formState.errors.name && (
                 <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
               )}
@@ -141,12 +141,12 @@ export function AchievementsClient({ initialAchievements }: Props) {
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Input id="description" {...form.register("description")} />
+              <Input id="description" {...form.register('description')} />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="iconUrl">Icon URL</Label>
-              <Input id="iconUrl" placeholder="https://..." {...form.register("iconUrl")} />
+              <Input id="iconUrl" placeholder="https://..." {...form.register('iconUrl')} />
               {form.formState.errors.iconUrl && (
                 <p className="text-xs text-destructive">{form.formState.errors.iconUrl.message}</p>
               )}
@@ -158,7 +158,7 @@ export function AchievementsClient({ initialAchievements }: Props) {
                 id="points"
                 type="number"
                 min={0}
-                {...form.register("points", { valueAsNumber: true })}
+                {...form.register('points', { valueAsNumber: true })}
               />
               {form.formState.errors.points && (
                 <p className="text-xs text-destructive">{form.formState.errors.points.message}</p>
@@ -172,12 +172,12 @@ export function AchievementsClient({ initialAchievements }: Props) {
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : editing ? "Update" : "Create"}
+                {loading ? 'Saving...' : editing ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

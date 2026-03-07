@@ -1,31 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
-import { timingSafeEqual } from "crypto";
-import { createSession } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
+import { createSession } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({}));
-  const { password } = body;
+  const body = await req.json().catch(() => ({}))
+  const { password } = body
 
-  const secret = process.env.API_SECRET;
+  const secret = process.env.API_SECRET
   if (!secret) {
-    return NextResponse.json({ message: "Server misconfiguration" }, { status: 500 });
+    return NextResponse.json({ message: 'Server misconfiguration' }, { status: 500 })
   }
 
-  let isValid = false;
+  let isValid = false
   try {
-    const a = Buffer.from(String(password ?? ""));
-    const b = Buffer.from(secret);
+    const a = Buffer.from(String(password ?? ''))
+    const b = Buffer.from(secret)
     if (a.length === b.length) {
-      isValid = timingSafeEqual(a, b);
+      isValid = timingSafeEqual(a, b)
     }
   } catch {
-    isValid = false;
+    isValid = false
   }
 
   if (!isValid) {
-    return NextResponse.json({ message: "Invalid password" }, { status: 401 });
+    return NextResponse.json({ message: 'Invalid password' }, { status: 401 })
   }
 
-  await createSession();
-  return NextResponse.json({ ok: true });
+  await createSession()
+  return NextResponse.json({ ok: true })
 }

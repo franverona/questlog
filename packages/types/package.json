@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "dependencies": {
-    "zod": "^3.24.1"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

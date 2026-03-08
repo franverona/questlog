@@ -52,6 +52,12 @@ export function AchievementsClient({ initialAchievements }: Props) {
     setOpen(true)
   }
 
+  async function handleDelete(id: string) {
+    if (!confirm('Delete this achievement? This cannot be undone.')) return
+    const res = await fetch(`/api/achievements/${id}`, { method: 'DELETE' })
+    if (res.ok) router.refresh()
+  }
+
   async function onSubmit(values: CreateAchievement) {
     setLoading(true)
     setError('')
@@ -100,9 +106,12 @@ export function AchievementsClient({ initialAchievements }: Props) {
               <Badge variant="secondary">{a.points} pts</Badge>
             </div>
             {a.description && <p className="text-sm text-muted-foreground">{a.description}</p>}
-            <div className="mt-auto pt-2">
+            <div className="flex gap-2 mt-auto pt-2">
               <Button variant="outline" size="sm" onClick={() => openEdit(a)}>
                 Edit
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => handleDelete(a.id)}>
+                Delete
               </Button>
             </div>
           </div>

@@ -25,6 +25,32 @@ rulesRouter.get('/', async (c) => {
   return c.json({ data: rows, error: null, meta: { total: rows.length } })
 })
 
+rulesRouter.get('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+
+  const [row] = await db
+    .select({
+      id: rules.id,
+      achievementId: rules.achievementId,
+      condition: rules.condition,
+      createdAt: rules.createdAt,
+      achievementName: achievements.name,
+    })
+    .from(rules)
+    .innerJoin(achievements, eq(rules.achievementId, achievements.id))
+    .where(eq(rules.id, id))
+
+  if (!row) {
+    return c.json(
+      { data: null, error: { message: 'Rule not found', code: 'NOT_FOUND' }, meta: null },
+      404,
+    )
+  }
+
+  return c.json({ data: row, error: null, meta: null })
+})
+
 rulesRouter.post('/', zValidator('json', CreateRuleSchema), async (c) => {
   const db = c.get('db')
   const body = c.req.valid('json')

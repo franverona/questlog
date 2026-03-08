@@ -17,6 +17,7 @@
     "@questlog/db": "*",
     "@questlog/types": "*",
     "hono": "^4.6.20",
+    "hono-rate-limiter": "^0.5.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {

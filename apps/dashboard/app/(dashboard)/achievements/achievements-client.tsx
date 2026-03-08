@@ -18,6 +18,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import type { AchievementRow } from './page'
+import { toast } from 'sonner'
 
 type Props = { initialAchievements: AchievementRow[] }
 
@@ -55,7 +56,12 @@ export function AchievementsClient({ initialAchievements }: Props) {
   async function handleDelete(id: string) {
     if (!confirm('Delete this achievement? This cannot be undone.')) return
     const res = await fetch(`/api/achievements/${id}`, { method: 'DELETE' })
-    if (res.ok) router.refresh()
+    if (res.ok) {
+      router.refresh()
+      toast.success('Achievement deleted')
+    } else {
+      toast.error('An error ocurred when deleting the achievement.')
+    }
   }
 
   async function onSubmit(values: CreateAchievement) {

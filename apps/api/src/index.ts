@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { createDb } from '@questlog/db'
 import { apiKeyAuth } from './middleware/auth.js'
+import { rateLimit } from './middleware/rate-limit.js'
 import { errorHandler } from './middleware/error-handler.js'
 import { requestLogger } from './middleware/logger.js'
 import { eventsRouter } from './routes/events.js'
@@ -35,6 +36,7 @@ app.get('/health', (c) => c.json({ status: 'ok' }))
 // Authenticated v1 routes
 const v1 = new Hono<Env>()
 v1.use('*', apiKeyAuth())
+v1.use('*', rateLimit(100, 60_000)) // 100 requests per minute, per API key
 
 v1.route('/events', eventsRouter)
 v1.route('/users', usersRouter)

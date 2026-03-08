@@ -15,7 +15,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
         },
         meta: null,
       },
-      400
+      400,
     )
   }
 
@@ -26,7 +26,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
         error: { message: err.message, code: 'HTTP_ERROR' },
         meta: null,
       },
-      err.status
+      err.status,
     )
   }
 
@@ -36,6 +36,6 @@ export const errorHandler: ErrorHandler = (err, c) => {
       error: { message: 'Internal server error', code: 'INTERNAL_ERROR' },
       meta: null,
     },
-    500
+    500,
   )
 }

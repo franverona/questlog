@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
@@ -33,8 +33,12 @@ async function proxy(req: NextRequest, { params }: { params: Promise<{ path: str
     data = await res.json()
   } catch {
     return NextResponse.json(
-      { data: null, error: { message: 'Upstream returned an unexpected response', code: 'UPSTREAM_ERROR' }, meta: null },
-      { status }
+      {
+        data: null,
+        error: { message: 'Upstream returned an unexpected response', code: 'UPSTREAM_ERROR' },
+        meta: null,
+      },
+      { status },
     )
   }
 

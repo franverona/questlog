@@ -13,7 +13,11 @@ statsRouter.get('/', async (c) => {
   const [[eventsRow], [achievementsRow], [usersRow]] = await Promise.all([
     db.select({ count: sql<number>`cast(count(*) as int)` }).from(userEvents),
     db.select({ count: sql<number>`cast(count(*) as int)` }).from(achievements),
-    db.select({ count: sql<number>`cast(count(distinct ${userAchievements.externalUserId}) as int)` }).from(userAchievements),
+    db
+      .select({
+        count: sql<number>`cast(count(distinct ${userAchievements.externalUserId}) as int)`,
+      })
+      .from(userAchievements),
   ])
 
   return c.json({

@@ -1,10 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 const API_SECRET = process.env.API_SECRET ?? ''
 
-async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -24,10 +21,10 @@ async function apiFetch<T>(
 }
 
 export type ApiEnvelope<T> = {
-  data: T;
-  error: null;
-  meta: { total?: number } | null;
-};
+  data: T
+  error: null
+  meta: { total?: number } | null
+}
 
 export function get<T>(path: string) {
   return apiFetch<ApiEnvelope<T>>(path)

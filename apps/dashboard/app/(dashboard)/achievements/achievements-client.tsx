@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import type { AchievementRow } from './page'
 
-type Props = { initialAchievements: AchievementRow[] };
+type Props = { initialAchievements: AchievementRow[] }
 
 export function AchievementsClient({ initialAchievements }: Props) {
   const router = useRouter()
@@ -56,9 +56,7 @@ export function AchievementsClient({ initialAchievements }: Props) {
     setLoading(true)
     setError('')
     try {
-      const url = editing
-        ? `/api/achievements/${editing.id}`
-        : '/api/achievements'
+      const url = editing ? `/api/achievements/${editing.id}` : '/api/achievements'
       const method = editing ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
@@ -93,22 +91,15 @@ export function AchievementsClient({ initialAchievements }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {initialAchievements.map((a) => (
-          <div
-            key={a.id}
-            className="border rounded-lg p-4 bg-card flex flex-col gap-2"
-          >
+          <div key={a.id} className="border rounded-lg p-4 bg-card flex flex-col gap-2">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
-                {a.iconUrl && (
-                  <Image src={a.iconUrl} alt="" width={32} height={32} />
-                )}
+                {a.iconUrl && <Image src={a.iconUrl} alt="" width={32} height={32} />}
                 <h3 className="font-semibold">{a.name}</h3>
               </div>
               <Badge variant="secondary">{a.points} pts</Badge>
             </div>
-            {a.description && (
-              <p className="text-sm text-muted-foreground">{a.description}</p>
-            )}
+            {a.description && <p className="text-sm text-muted-foreground">{a.description}</p>}
             <div className="mt-auto pt-2">
               <Button variant="outline" size="sm" onClick={() => openEdit(a)}>
                 Edit

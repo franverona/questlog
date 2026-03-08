@@ -4,17 +4,17 @@ A full-stack Gamification-as-a-Service platform with a REST API and management d
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
-| API | Hono + Node.js (port 3001) |
-| Dashboard | Next.js 16 App Router (port 3000) |
-| Database | PostgreSQL + Drizzle ORM |
-| Monorepo | Turborepo |
-| Language | TypeScript everywhere |
-| Linting | ESLint 10 (flat config) |
-| Commits | Conventional Commits via commitlint |
-| Git hooks | Husky + lint-staged |
-| CI | GitHub Actions |
+| Layer     | Tech                                |
+| --------- | ----------------------------------- |
+| API       | Hono + Node.js (port 3001)          |
+| Dashboard | Next.js 16 App Router (port 3000)   |
+| Database  | PostgreSQL + Drizzle ORM            |
+| Monorepo  | Turborepo                           |
+| Language  | TypeScript everywhere               |
+| Linting   | ESLint 10 (flat config)             |
+| Commits   | Conventional Commits via commitlint |
+| Git hooks | Husky + lint-staged                 |
+| CI        | GitHub Actions                      |
 
 ## Project structure
 
@@ -106,6 +106,7 @@ curl -X POST http://localhost:3001/v1/events/track \
 ```
 
 Response:
+
 ```json
 {
   "data": {
@@ -212,11 +213,11 @@ Rules live in `apps/api/src/rule-engine.ts`. The evaluator runs synchronously af
 
 ### Supported condition types
 
-| Type | Description |
-|---|---|
-| `event_count` | User fired event ≥ N times |
-| `streak` | User fired event on N consecutive calendar days up to today |
-| `combination` | `AND`/`OR` over nested conditions (recursive, any depth) |
+| Type          | Description                                                 |
+| ------------- | ----------------------------------------------------------- |
+| `event_count` | User fired event ≥ N times                                  |
+| `streak`      | User fired event on N consecutive calendar days up to today |
+| `combination` | `AND`/`OR` over nested conditions (recursive, any depth)    |
 
 Adding a new condition type only requires adding a new `case` in `evalCondition` — the TypeScript exhaustive check will flag any unhandled type at compile time.
 
@@ -234,14 +235,14 @@ cd apps/api && npm test
 
 ## npm scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start API + dashboard in parallel |
-| `npm run build` | Build all packages |
-| `npm run test` | Run all tests |
-| `npm run lint` | Run ESLint across all packages |
-| `npm run db:migrate` | Apply pending migrations |
-| `npm run db:seed` | Seed demo data |
+| Script               | Description                       |
+| -------------------- | --------------------------------- |
+| `npm run dev`        | Start API + dashboard in parallel |
+| `npm run build`      | Build all packages                |
+| `npm run test`       | Run all tests                     |
+| `npm run lint`       | Run ESLint across all packages    |
+| `npm run db:migrate` | Apply pending migrations          |
+| `npm run db:seed`    | Seed demo data                    |
 
 ---
 

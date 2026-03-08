@@ -1,12 +1,4 @@
-import {
-  pgTable,
-  text,
-  timestamp,
-  integer,
-  jsonb,
-  uuid,
-  index,
-} from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, integer, jsonb, uuid, index } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 export const events = pgTable('events', {
@@ -47,7 +39,7 @@ export const userEvents = pgTable(
     index('user_events_user_idx').on(t.externalUserId),
     index('user_events_event_idx').on(t.eventName),
     index('user_events_user_event_idx').on(t.externalUserId, t.eventName),
-  ]
+  ],
 )
 
 export const userAchievements = pgTable(
@@ -60,9 +52,7 @@ export const userAchievements = pgTable(
       .references(() => achievements.id, { onDelete: 'cascade' }),
     unlockedAt: timestamp('unlocked_at').notNull().defaultNow(),
   },
-  (t) => [
-    index('user_achievements_user_idx').on(t.externalUserId),
-  ]
+  (t) => [index('user_achievements_user_idx').on(t.externalUserId)],
 )
 
 // Relations
@@ -79,12 +69,9 @@ export const rulesRelations = relations(rules, ({ one }) => ({
   }),
 }))
 
-export const userAchievementsRelations = relations(
-  userAchievements,
-  ({ one }) => ({
-    achievement: one(achievements, {
-      fields: [userAchievements.achievementId],
-      references: [achievements.id],
-    }),
-  })
-)
+export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+  achievement: one(achievements, {
+    fields: [userAchievements.achievementId],
+    references: [achievements.id],
+  }),
+}))

@@ -18,7 +18,7 @@ if (!databaseUrl) {
 
 const db = createDb(databaseUrl)
 
-type Env = { Variables: { db: ReturnType<typeof createDb> } };
+type Env = { Variables: { db: ReturnType<typeof createDb> } }
 
 const app = new Hono<Env>()
 
@@ -50,10 +50,7 @@ app.onError(errorHandler)
 
 // 404 handler
 app.notFound((c) =>
-  c.json(
-    { data: null, error: { message: 'Not found', code: 'NOT_FOUND' }, meta: null },
-    404
-  )
+  c.json({ data: null, error: { message: 'Not found', code: 'NOT_FOUND' }, meta: null }, 404),
 )
 
 const port = parseInt(process.env.PORT ?? '3001', 10)

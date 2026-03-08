@@ -3,7 +3,7 @@ import type { Db } from '@questlog/db'
 import { userAchievements, achievements } from '@questlog/db'
 import { eq, sql, desc } from 'drizzle-orm'
 
-type Env = { Variables: { db: Db } };
+type Env = { Variables: { db: Db } }
 
 export const leaderboardRouter = new Hono<Env>()
 

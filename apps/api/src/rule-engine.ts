@@ -4,24 +4,24 @@ import { eq, inArray } from 'drizzle-orm'
 import type { Condition } from '@questlog/types'
 
 export type Achievement = {
-  id: string;
-  name: string;
-  description: string | null | undefined;
-  iconUrl: string | null | undefined;
-  points: number;
-  createdAt: Date | string;
-};
+  id: string
+  name: string
+  description: string | null | undefined
+  iconUrl: string | null | undefined
+  points: number
+  createdAt: Date | string
+}
 
 type EventRow = {
-  eventName: string;
-  createdAt: Date;
-};
+  eventName: string
+  createdAt: Date
+}
 
 // ─── Condition evaluators ─────────────────────────────────────────────────────
 
 function evalEventCount(
   condition: { type: 'event_count'; event_name: string; threshold: number },
-  events: EventRow[]
+  events: EventRow[],
 ): boolean {
   const count = events.filter((e) => e.eventName === condition.event_name).length
   return count >= condition.threshold
@@ -29,7 +29,7 @@ function evalEventCount(
 
 function evalStreak(
   condition: { type: 'streak'; event_name: string; days: number },
-  events: EventRow[]
+  events: EventRow[],
 ): boolean {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -42,7 +42,7 @@ function evalStreak(
         const d = new Date(e.createdAt)
         d.setHours(0, 0, 0, 0)
         return d.getTime()
-      })
+      }),
   )
 
   if (days.size === 0) return false
@@ -85,10 +85,7 @@ function evalCondition(condition: Condition, events: EventRow[]): boolean {
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export async function evaluateRules(
-  userId: string,
-  db: Db
-): Promise<Achievement[]> {
+export async function evaluateRules(userId: string, db: Db): Promise<Achievement[]> {
   // 1. Load user's full event history
   const eventRows = await db
     .select({ eventName: userEvents.eventName, createdAt: userEvents.createdAt })
@@ -140,7 +137,7 @@ export async function evaluateRules(
     uniqueToUnlock.map((achievementId) => ({
       externalUserId: userId,
       achievementId,
-    }))
+    })),
   )
 
   // 6. Return the unlocked achievement details

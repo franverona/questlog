@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm'
 import { zValidator } from '@hono/zod-validator'
 import { CreateRuleSchema } from '@questlog/types'
 
-type Env = { Variables: { db: Db } };
+type Env = { Variables: { db: Db } }
 
 export const rulesRouter = new Hono<Env>()
 
@@ -25,52 +25,44 @@ rulesRouter.get('/', async (c) => {
   return c.json({ data: rows, error: null, meta: { total: rows.length } })
 })
 
-rulesRouter.post(
-  '/',
-  zValidator('json', CreateRuleSchema),
-  async (c) => {
-    const db = c.get('db')
-    const body = c.req.valid('json')
+rulesRouter.post('/', zValidator('json', CreateRuleSchema), async (c) => {
+  const db = c.get('db')
+  const body = c.req.valid('json')
 
-    const [row] = await db
-      .insert(rules)
-      .values({
-        achievementId: body.achievementId,
-        condition: body.condition,
-      })
-      .returning()
+  const [row] = await db
+    .insert(rules)
+    .values({
+      achievementId: body.achievementId,
+      condition: body.condition,
+    })
+    .returning()
 
-    return c.json({ data: row, error: null, meta: null }, 201)
+  return c.json({ data: row, error: null, meta: null }, 201)
+})
+
+rulesRouter.put('/:id', zValidator('json', CreateRuleSchema), async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+  const body = c.req.valid('json')
+
+  const [row] = await db
+    .update(rules)
+    .set({
+      achievementId: body.achievementId,
+      condition: body.condition,
+    })
+    .where(eq(rules.id, id))
+    .returning()
+
+  if (!row) {
+    return c.json(
+      { data: null, error: { message: 'Rule not found', code: 'NOT_FOUND' }, meta: null },
+      404,
+    )
   }
-)
 
-rulesRouter.put(
-  '/:id',
-  zValidator('json', CreateRuleSchema),
-  async (c) => {
-    const db = c.get('db')
-    const id = c.req.param('id')
-    const body = c.req.valid('json')
-
-    const [row] = await db
-      .update(rules)
-      .set({
-        achievementId: body.achievementId,
-        condition: body.condition,
-      })
-      .where(eq(rules.id, id))
-      .returning()
-
-    if (!row) {
-      return c.json(
-        { data: null, error: { message: 'Rule not found', code: 'NOT_FOUND' }, meta: null },
-        404
-      )
-    }
-
-    return c.json({ data: row, error: null, meta: null })
-  }
-)
+  return c.json({ data: row, error: null, meta: null })
+})
 
 rulesRouter.delete('/:id', async (c) => {
   const db = c.get('db')
@@ -81,7 +73,7 @@ rulesRouter.delete('/:id', async (c) => {
   if (!row) {
     return c.json(
       { data: null, error: { message: 'Rule not found', code: 'NOT_FOUND' }, meta: null },
-      404
+      404,
     )
   }
 

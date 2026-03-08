@@ -2,13 +2,17 @@ import { get } from '@/lib/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type StatsData = {
-  totalEvents: number;
-  totalAchievements: number;
-  totalActiveUsers: number;
-};
+  totalEvents: number
+  totalAchievements: number
+  totalActiveUsers: number
+}
 
 async function getStats(): Promise<StatsData> {
-  const response = await get<{ total_events: number; total_achievements: number; total_users_with_achievements: number }>('/v1/stats')
+  const response = await get<{
+    total_events: number
+    total_achievements: number
+    total_users_with_achievements: number
+  }>('/v1/stats')
 
   return {
     totalEvents: response.data.total_events,
@@ -30,7 +34,11 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard title="Total Achievements" value={stats.totalAchievements} />
         <StatCard title="Total Events" value={stats.totalEvents} />
-        <StatCard title="Active Users" value={stats.totalActiveUsers} description="Users with points" />
+        <StatCard
+          title="Active Users"
+          value={stats.totalActiveUsers}
+          description="Users with points"
+        />
       </div>
     </div>
   )
@@ -41,9 +49,9 @@ function StatCard({
   value,
   description,
 }: {
-  title: string;
-  value: number;
-  description?: string;
+  title: string
+  value: number
+  description?: string
 }) {
   return (
     <Card>

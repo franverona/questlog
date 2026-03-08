@@ -94,9 +94,7 @@
         "events_name_unique": {
           "name": "events_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -140,12 +138,8 @@
           "name": "rules_achievement_id_achievements_id_fk",
           "tableFrom": "rules",
           "tableTo": "achievements",
-          "columnsFrom": [
-            "achievement_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["achievement_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -209,12 +203,8 @@
           "name": "user_achievements_achievement_id_achievements_id_fk",
           "tableFrom": "user_achievements",
           "tableTo": "achievements",
-          "columnsFrom": [
-            "achievement_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["achievement_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

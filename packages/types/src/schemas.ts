@@ -18,13 +18,13 @@ export const StreakConditionSchema = z.object({
 export type Condition =
   | z.infer<typeof EventCountConditionSchema>
   | z.infer<typeof StreakConditionSchema>
-  | CombinationCondition;
+  | CombinationCondition
 
 export type CombinationCondition = {
-  type: 'combination';
-  operator: 'AND' | 'OR';
-  conditions: Condition[];
-};
+  type: 'combination'
+  operator: 'AND' | 'OR'
+  conditions: Condition[]
+}
 
 export const ConditionSchema: z.ZodType<Condition> = z.lazy(() =>
   z.discriminatedUnion('type', [
@@ -35,15 +35,14 @@ export const ConditionSchema: z.ZodType<Condition> = z.lazy(() =>
       operator: z.enum(['AND', 'OR']),
       conditions: z.array(ConditionSchema).min(1),
     }),
-  ])
+  ]),
 )
 
-export const CombinationConditionSchema: z.ZodType<CombinationCondition> =
-  z.object({
-    type: z.literal('combination'),
-    operator: z.enum(['AND', 'OR']),
-    conditions: z.array(ConditionSchema).min(1),
-  })
+export const CombinationConditionSchema: z.ZodType<CombinationCondition> = z.object({
+  type: z.literal('combination'),
+  operator: z.enum(['AND', 'OR']),
+  conditions: z.array(ConditionSchema).min(1),
+})
 
 // ─── Achievement ──────────────────────────────────────────────────────────────
 
@@ -56,7 +55,7 @@ export const AchievementSchema = z.object({
   createdAt: z.date().or(z.string()),
 })
 
-export type Achievement = z.infer<typeof AchievementSchema>;
+export type Achievement = z.infer<typeof AchievementSchema>
 
 export const CreateAchievementSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -65,7 +64,7 @@ export const CreateAchievementSchema = z.object({
   points: z.number().int().nonnegative(),
 })
 
-export type CreateAchievement = z.infer<typeof CreateAchievementSchema>;
+export type CreateAchievement = z.infer<typeof CreateAchievementSchema>
 
 // ─── Rule ─────────────────────────────────────────────────────────────────────
 
@@ -76,14 +75,14 @@ export const RuleSchema = z.object({
   createdAt: z.date().or(z.string()),
 })
 
-export type Rule = z.infer<typeof RuleSchema>;
+export type Rule = z.infer<typeof RuleSchema>
 
 export const CreateRuleSchema = z.object({
   achievementId: z.string().uuid('Achievement ID must be a valid UUID'),
   condition: ConditionSchema,
 })
 
-export type CreateRule = z.infer<typeof CreateRuleSchema>;
+export type CreateRule = z.infer<typeof CreateRuleSchema>
 
 // ─── Event tracking ───────────────────────────────────────────────────────────
 
@@ -93,7 +92,7 @@ export const TrackEventSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
-export type TrackEvent = z.infer<typeof TrackEventSchema>;
+export type TrackEvent = z.infer<typeof TrackEventSchema>
 
 // ─── API response envelope ────────────────────────────────────────────────────
 
@@ -102,12 +101,12 @@ export const ApiErrorSchema = z.object({
   code: z.string(),
 })
 
-export type ApiError = z.infer<typeof ApiErrorSchema>;
+export type ApiError = z.infer<typeof ApiErrorSchema>
 
 export type ApiResponse<T> =
   | { data: T; error: null; meta: null }
   | { data: T; error: null; meta: Record<string, unknown> }
-  | { data: null; error: ApiError; meta: null };
+  | { data: null; error: ApiError; meta: null }
 
 // ─── Progress ─────────────────────────────────────────────────────────────────
 
@@ -119,7 +118,7 @@ export const ProgressItemSchema = z.object({
   percent: z.number().min(0).max(100),
 })
 
-export type ProgressItem = z.infer<typeof ProgressItemSchema>;
+export type ProgressItem = z.infer<typeof ProgressItemSchema>
 
 // ─── Leaderboard ──────────────────────────────────────────────────────────────
 
@@ -129,4 +128,4 @@ export const LeaderboardEntrySchema = z.object({
   total_points: z.number().int().nonnegative(),
 })
 
-export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
+export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>

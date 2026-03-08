@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
 import { createSession } from '@/lib/auth'
 

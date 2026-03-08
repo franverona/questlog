@@ -7,3 +7,4 @@ dist
 *.log
 *.tsbuildinfo
 .DS_Store
+apps/dashboard/next-env.d.ts

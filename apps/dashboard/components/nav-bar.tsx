@@ -10,6 +10,7 @@ const links = [
   { href: '/achievements', label: 'Achievements' },
   { href: '/rules', label: 'Rules' },
   { href: '/users', label: 'Users' },
+  { href: '/preferences', label: 'Preferences' },
 ]
 
 export function NavBar() {

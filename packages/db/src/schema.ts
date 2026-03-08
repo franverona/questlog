@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, jsonb, uuid, index } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, integer, jsonb, uuid, index, unique } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 export const events = pgTable('events', {
@@ -52,7 +52,10 @@ export const userAchievements = pgTable(
       .references(() => achievements.id, { onDelete: 'cascade' }),
     unlockedAt: timestamp('unlocked_at').notNull().defaultNow(),
   },
-  (t) => [index('user_achievements_user_idx').on(t.externalUserId)],
+  (t) => [
+    index('user_achievements_user_idx').on(t.externalUserId),
+    unique('user_achievements_unique').on(t.externalUserId, t.achievementId),
+  ],
 )
 
 // Relations

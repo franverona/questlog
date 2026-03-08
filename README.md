@@ -4,17 +4,18 @@ A full-stack Gamification-as-a-Service platform with a REST API and management d
 
 ## Stack
 
-| Layer     | Tech                                |
-| --------- | ----------------------------------- |
-| API       | Hono + Node.js (port 3001)          |
-| Dashboard | Next.js 16 App Router (port 3000)   |
-| Database  | PostgreSQL + Drizzle ORM            |
-| Monorepo  | Turborepo                           |
-| Language  | TypeScript everywhere               |
-| Linting   | ESLint 10 (flat config)             |
-| Commits   | Conventional Commits via commitlint |
-| Git hooks | Husky + lint-staged                 |
-| CI        | GitHub Actions                      |
+| Layer      | Tech                                 |
+| ---------- | ------------------------------------ |
+| API        | Hono + Node.js (port 3001)           |
+| Dashboard  | Next.js 16 App Router (port 3000)    |
+| Database   | PostgreSQL + Drizzle ORM             |
+| Monorepo   | Turborepo                            |
+| Language   | TypeScript everywhere                |
+| Linting    | ESLint 10 (flat config)              |
+| Formatting | Prettier (defaults, via lint-staged) |
+| Commits    | Conventional Commits via commitlint  |
+| Git hooks  | Husky + lint-staged                  |
+| CI         | GitHub Actions                       |
 
 ## Project structure
 
@@ -224,12 +225,19 @@ Adding a new condition type only requires adding a new `case` in `evalCondition`
 ### Running tests
 
 ```bash
-npm run test --filter=@questlog/api
-# or from apps/api:
+# All packages
+npm run test
+
+# API only (rule engine unit tests)
 cd apps/api && npm test
+
+# Dashboard only (proxy route unit tests)
+cd apps/dashboard && npm test
 ```
 
-20 unit tests covering all condition types, AND/OR combinations, edge cases (zero events, duplicate days in streaks, broken streaks, already-unlocked achievements).
+**API** — 20 unit tests covering all condition types, AND/OR combinations, edge cases (zero events, duplicate days in streaks, broken streaks, already-unlocked achievements).
+
+**Dashboard** — 14 unit tests for the catch-all proxy route: auth enforcement, URL/query-string construction, method-specific body forwarding, status passthrough, and non-JSON upstream error handling.
 
 ---
 
@@ -259,7 +267,17 @@ docs: update API reference
 
 The `commit-msg` hook rejects commits that don't match this format.
 
-The `pre-commit` hook runs ESLint via lint-staged on all staged `.ts`/`.tsx` files before every commit.
+The `pre-commit` hook runs lint-staged on all staged files:
+
+1. **Prettier** formats `*.{ts,tsx,json,md}` files automatically.
+2. **ESLint** (`--max-warnings=0`) checks `*.{ts,tsx}` files — warnings are treated as errors.
+
+To format manually without committing:
+
+```bash
+npx prettier --write .
+npm run lint
+```
 
 ---
 

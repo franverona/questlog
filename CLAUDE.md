@@ -24,6 +24,7 @@ Run tests for a single package:
 
 ```bash
 cd apps/api && npm test
+cd apps/dashboard && npm test
 ```
 
 ## Architecture decisions
@@ -70,4 +71,23 @@ docs: update README
 
 ## ESLint
 
-Flat config at `eslint.config.mjs`. Runs on all `.ts`/`.tsx` files. Next.js + react-hooks rules are scoped to `apps/dashboard` only. `--max-warnings=0` is enforced on pre-commit — no warnings allowed through.
+Flat config at `eslint.config.mjs`. Runs on all `.ts`/`.tsx` files across the monorepo. `--max-warnings=0` is enforced on pre-commit — no warnings allowed through.
+
+Key rules:
+
+- `@typescript-eslint/no-explicit-any` — **warn** (avoid `any`; use proper types or `unknown`)
+- `@typescript-eslint/no-floating-promises` — **error** (always `await` or `.catch()` promises)
+- `@typescript-eslint/consistent-type-imports` — **error** (use `import { type Foo }` not `import { Foo }` for type-only imports)
+- `@typescript-eslint/no-unused-vars` — **error** (prefix intentionally unused vars/args/errors with `_` to silence)
+- Next.js + react-hooks rules are scoped to `apps/dashboard/**` only
+- `eslint-config-prettier` disables all formatting rules — Prettier owns formatting
+
+## Prettier
+
+No config file — uses Prettier defaults (double quotes, 2-space indent, trailing commas, 80-char print width).
+
+Prettier runs automatically on pre-commit via lint-staged on all `*.{ts,tsx,json,md}` files. There is no root `format` script; run manually with:
+
+```bash
+npx prettier --write .
+```

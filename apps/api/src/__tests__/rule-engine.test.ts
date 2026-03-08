@@ -5,10 +5,7 @@ import type { Condition } from '@questlog/types'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function makeEvents(
-  eventName: string,
-  daysAgo: number[]
-): EventRow[] {
+function makeEvents(eventName: string, daysAgo: number[]): EventRow[] {
   return daysAgo.map((ago) => {
     const d = new Date()
     d.setDate(d.getDate() - ago)
@@ -85,10 +82,7 @@ describe('streak', () => {
 
   it('counts each day only once (duplicate events on same day)', () => {
     // 4 events today, 1 yesterday — still only 2 distinct days
-    const events = [
-      ...makeEvents('login', [0, 0, 0, 0]),
-      ...makeEvents('login', [1]),
-    ]
+    const events = [...makeEvents('login', [0, 0, 0, 0]), ...makeEvents('login', [1])]
     const condition: Condition = { type: 'streak', event_name: 'login', days: 3 }
     expect(evalCondition(condition, events)).toBe(false)
   })
@@ -104,10 +98,7 @@ describe('streak', () => {
 
 describe('combination AND', () => {
   it('returns true when all conditions are met', () => {
-    const events = [
-      ...makeEvents('login', [0, 1, 2, 3, 4]),
-      ...makeEvents('purchase', [0]),
-    ]
+    const events = [...makeEvents('login', [0, 1, 2, 3, 4]), ...makeEvents('purchase', [0])]
     const condition: Condition = {
       type: 'combination',
       operator: 'AND',
@@ -191,10 +182,7 @@ describe('combination OR', () => {
 
 describe('nested combination', () => {
   it('evaluates deeply nested AND inside OR', () => {
-    const events = [
-      ...makeEvents('login', [0, 1, 2, 3, 4]),
-      ...makeEvents('purchase', [0]),
-    ]
+    const events = [...makeEvents('login', [0, 1, 2, 3, 4]), ...makeEvents('purchase', [0])]
     const condition: Condition = {
       type: 'combination',
       operator: 'OR',

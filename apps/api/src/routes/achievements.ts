@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm'
 import { zValidator } from '@hono/zod-validator'
 import { CreateAchievementSchema } from '@questlog/types'
 
-type Env = { Variables: { db: Db } };
+type Env = { Variables: { db: Db } }
 
 export const achievementsRouter = new Hono<Env>()
 
@@ -23,77 +23,66 @@ achievementsRouter.get('/:id', async (c) => {
   if (!row) {
     return c.json(
       { data: null, error: { message: 'Achievement not found', code: 'NOT_FOUND' }, meta: null },
-      404
+      404,
     )
   }
 
   return c.json({ data: row, error: null, meta: null })
 })
 
-achievementsRouter.post(
-  '/',
-  zValidator('json', CreateAchievementSchema),
-  async (c) => {
-    const db = c.get('db')
-    const body = c.req.valid('json')
-
-    const [row] = await db
-      .insert(achievements)
-      .values({
-        name: body.name,
-        description: body.description,
-        iconUrl: body.iconUrl || null,
-        points: body.points,
-      })
-      .returning()
-
-    return c.json({ data: row, error: null, meta: null }, 201)
-  }
-)
-
-achievementsRouter.put(
-  '/:id',
-  zValidator('json', CreateAchievementSchema),
-  async (c) => {
-    const db = c.get('db')
-    const id = c.req.param('id')
-    const body = c.req.valid('json')
-
-    const [row] = await db
-      .update(achievements)
-      .set({
-        name: body.name,
-        description: body.description,
-        iconUrl: body.iconUrl || null,
-        points: body.points,
-      })
-      .where(eq(achievements.id, id))
-      .returning()
-
-    if (!row) {
-      return c.json(
-        { data: null, error: { message: 'Achievement not found', code: 'NOT_FOUND' }, meta: null },
-        404
-      )
-    }
-
-    return c.json({ data: row, error: null, meta: null })
-  }
-)
-
-achievementsRouter.delete('/:id', async (c) => {
+achievementsRouter.post('/', zValidator('json', CreateAchievementSchema), async (c) => {
   const db = c.get('db')
-  const id = c.req.param('id')
+  const body = c.req.valid('json')
 
   const [row] = await db
-    .delete(achievements)
+    .insert(achievements)
+    .values({
+      name: body.name,
+      description: body.description,
+      iconUrl: body.iconUrl || null,
+      points: body.points,
+    })
+    .returning()
+
+  return c.json({ data: row, error: null, meta: null }, 201)
+})
+
+achievementsRouter.put('/:id', zValidator('json', CreateAchievementSchema), async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+  const body = c.req.valid('json')
+
+  const [row] = await db
+    .update(achievements)
+    .set({
+      name: body.name,
+      description: body.description,
+      iconUrl: body.iconUrl || null,
+      points: body.points,
+    })
     .where(eq(achievements.id, id))
     .returning()
 
   if (!row) {
     return c.json(
       { data: null, error: { message: 'Achievement not found', code: 'NOT_FOUND' }, meta: null },
-      404
+      404,
+    )
+  }
+
+  return c.json({ data: row, error: null, meta: null })
+})
+
+achievementsRouter.delete('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+
+  const [row] = await db.delete(achievements).where(eq(achievements.id, id)).returning()
+
+  if (!row) {
+    return c.json(
+      { data: null, error: { message: 'Achievement not found', code: 'NOT_FOUND' }, meta: null },
+      404,
     )
   }
 

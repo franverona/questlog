@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/select'
 import type { Condition } from '@questlog/types'
 
-type ConditionType = 'event_count' | 'streak' | 'combination';
+type ConditionType = 'event_count' | 'streak' | 'combination'
 
 interface Props {
-  condition: Condition;
-  onChange: (c: Condition) => void;
-  depth?: number;
+  condition: Condition
+  onChange: (c: Condition) => void
+  depth?: number
 }
 
 function defaultCondition(type: ConditionType): Condition {
@@ -100,9 +100,7 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
               type="number"
               min={1}
               value={condition.days}
-              onChange={(e) =>
-                onChange({ ...condition, days: parseInt(e.target.value, 10) || 1 })
-              }
+              onChange={(e) => onChange({ ...condition, days: parseInt(e.target.value, 10) || 1 })}
             />
           </div>
         </>
@@ -114,9 +112,7 @@ export function ConditionBuilder({ condition, onChange, depth = 0 }: Props) {
             <Label>Operator</Label>
             <Select
               value={condition.operator}
-              onValueChange={(val) =>
-                onChange({ ...condition, operator: val as 'AND' | 'OR' })
-              }
+              onValueChange={(val) => onChange({ ...condition, operator: val as 'AND' | 'OR' })}
             >
               <SelectTrigger>
                 <SelectValue />

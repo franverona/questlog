@@ -1,10 +1,5 @@
 import { createDb } from './client.js'
-import {
-  achievements,
-  rules,
-  userEvents,
-  userAchievements,
-} from './schema.js'
+import { achievements, rules, userEvents, userAchievements } from './schema.js'
 
 const connectionString = process.env.DATABASE_URL
 if (!connectionString) {
@@ -145,7 +140,7 @@ aliceEvents.push(
     eventName: 'user.login',
     metadata: {},
     createdAt: daysAgo(9),
-  }
+  },
 )
 aliceEvents.push({
   externalUserId: 'user_alice',
@@ -189,18 +184,12 @@ const charlieEvents = [
   })),
 ]
 
-await db.insert(userEvents).values([
-  ...aliceEvents,
-  ...bobEvents,
-  ...charlieEvents,
-])
+await db.insert(userEvents).values([...aliceEvents, ...bobEvents, ...charlieEvents])
 
 console.log('Seed complete!')
 console.log('  user_alice: 10 logins (7-day streak), 1 purchase')
 console.log('  user_bob: 5 logins, 3 product views')
 console.log('  user_charlie: 1 login, 5 searches')
-console.log(
-  '\nRun the rule evaluator manually or track a new event to see achievements unlock.'
-)
+console.log('\nRun the rule evaluator manually or track a new event to see achievements unlock.')
 
 process.exit(0)

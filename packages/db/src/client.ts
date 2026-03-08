@@ -7,4 +7,4 @@ export function createDb(connectionString: string) {
   return drizzle(client, { schema })
 }
 
-export type Db = ReturnType<typeof createDb>;
+export type Db = ReturnType<typeof createDb>

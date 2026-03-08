@@ -2,17 +2,17 @@ import { get } from '@/lib/api'
 import { RulesClient } from './rules-client'
 
 export type RuleRow = {
-  id: string;
-  achievementId: string;
-  condition: unknown;
-  createdAt: string;
-  achievementName: string;
-};
+  id: string
+  achievementId: string
+  condition: unknown
+  createdAt: string
+  achievementName: string
+}
 
 export type AchievementOption = {
-  id: string;
-  name: string;
-};
+  id: string
+  name: string
+}
 
 async function getData() {
   const [rulesRes, achievementsRes] = await Promise.all([

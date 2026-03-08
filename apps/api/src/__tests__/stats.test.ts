@@ -5,7 +5,8 @@ import { statsRouter } from '../routes/stats.js'
 function makeDb(counts: { events: number; achievements: number; users: number }) {
   return {
     select: vi.fn().mockReturnValue({
-      from: vi.fn()
+      from: vi
+        .fn()
         .mockResolvedValueOnce([{ count: counts.events }])
         .mockResolvedValueOnce([{ count: counts.achievements }])
         .mockResolvedValueOnce([{ count: counts.users }]),
@@ -30,7 +31,7 @@ describe('GET /v1/stats', () => {
     const db = makeDb({ events: 42, achievements: 10, users: 7 })
     const res = await makeApp(db).request('/')
     expect(res.status).toBe(200)
-    const body = await res.json() as StatsResponse
+    const body = (await res.json()) as StatsResponse
     expect(body).toEqual({
       data: {
         total_events: 42,
@@ -46,7 +47,7 @@ describe('GET /v1/stats', () => {
     const db = makeDb({ events: 0, achievements: 0, users: 0 })
     const res = await makeApp(db).request('/')
     expect(res.status).toBe(200)
-    const body = await res.json() as StatsResponse
+    const body = (await res.json()) as StatsResponse
     expect(body.data).toEqual({
       total_events: 0,
       total_achievements: 0,
@@ -57,14 +58,15 @@ describe('GET /v1/stats', () => {
   it('falls back to 0 when a query returns no rows', async () => {
     const db = {
       select: vi.fn().mockReturnValue({
-        from: vi.fn()
-          .mockResolvedValueOnce([])   // userEvents — empty
+        from: vi
+          .fn()
+          .mockResolvedValueOnce([]) // userEvents — empty
           .mockResolvedValueOnce([{ count: 5 }])
           .mockResolvedValueOnce([{ count: 3 }]),
       }),
     }
     const res = await makeApp(db).request('/')
-    const body = await res.json() as StatsResponse
+    const body = (await res.json()) as StatsResponse
     expect(body.data.total_events).toBe(0)
     expect(body.data.total_achievements).toBe(5)
     expect(body.data.total_users_with_achievements).toBe(3)
@@ -73,14 +75,15 @@ describe('GET /v1/stats', () => {
   it('falls back to 0 when a query returns null count', async () => {
     const db = {
       select: vi.fn().mockReturnValue({
-        from: vi.fn()
-          .mockResolvedValueOnce([{ count: null }])   // userEvents — null
+        from: vi
+          .fn()
+          .mockResolvedValueOnce([{ count: null }]) // userEvents — null
           .mockResolvedValueOnce([{ count: 5 }])
           .mockResolvedValueOnce([{ count: 3 }]),
       }),
     }
     const res = await makeApp(db).request('/')
-    const body = await res.json() as StatsResponse
+    const body = (await res.json()) as StatsResponse
     expect(body.data.total_events).toBe(0)
     expect(body.data.total_achievements).toBe(5)
     expect(body.data.total_users_with_achievements).toBe(3)

@@ -11,7 +11,7 @@ export function apiKeyAuth(): MiddlewareHandler {
           error: { message: 'Server misconfiguration: API_SECRET not set', code: 'SERVER_ERROR' },
           meta: null,
         },
-        500
+        500,
       )
     }
 
@@ -37,7 +37,7 @@ export function apiKeyAuth(): MiddlewareHandler {
           error: { message: 'Invalid or missing API key', code: 'UNAUTHORIZED' },
           meta: null,
         },
-        401
+        401,
       )
     }
 

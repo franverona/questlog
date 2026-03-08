@@ -3,6 +3,7 @@
 ## Project overview
 
 Gamification-as-a-Service platform. Turborepo monorepo with:
+
 - `apps/api` — Hono REST API (port 3001)
 - `apps/dashboard` — Next.js 16 App Router dashboard (port 3000)
 - `packages/db` — Drizzle ORM schema + migrations
@@ -20,6 +21,7 @@ npm run db:seed      # seed demo data
 ```
 
 Run tests for a single package:
+
 ```bash
 cd apps/api && npm test
 ```
@@ -29,6 +31,7 @@ cd apps/api && npm test
 **Shared types**: All Zod schemas live in `packages/types/src/schemas.ts`. Infer TypeScript types from them — do not write separate type definitions. Both the API (Zod validation) and the dashboard (react-hook-form resolvers) import from this package.
 
 **API response envelope**: Every API response must follow the envelope shape:
+
 ```ts
 { data: T, error: null, meta: null | { total?: number } }   // success
 { data: null, error: { message: string, code: string }, meta: null }  // error
@@ -55,6 +58,7 @@ cd apps/api && npm test
 ## Commit convention
 
 Conventional Commits are enforced by commitlint on every commit:
+
 ```
 feat: add X
 fix: correct Y

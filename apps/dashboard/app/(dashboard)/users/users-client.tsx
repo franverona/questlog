@@ -8,24 +8,24 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type Achievement = {
-  id: string;
-  name: string;
-  points: number;
-  iconUrl: string | null;
-  description: string | null;
-};
+  id: string
+  name: string
+  points: number
+  iconUrl: string | null
+  description: string | null
+}
 
 type UserEvent = {
-  id: string;
-  eventName: string;
-  metadata: unknown;
-  createdAt: string;
-};
+  id: string
+  eventName: string
+  metadata: unknown
+  createdAt: string
+}
 
 type UserData = {
-  achievements: Achievement[];
-  events: UserEvent[];
-};
+  achievements: Achievement[]
+  events: UserEvent[]
+}
 
 export function UsersClient() {
   const [userId, setUserId] = useState('')
@@ -52,10 +52,7 @@ export function UsersClient() {
         throw new Error('Failed to load user data')
       }
 
-      const [achData, eventsData] = await Promise.all([
-        achRes.json(),
-        eventsRes.json(),
-      ])
+      const [achData, eventsData] = await Promise.all([achRes.json(), eventsRes.json()])
 
       setUserId(query)
       setUserData({
@@ -77,11 +74,7 @@ export function UsersClient() {
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="user_alice"
-        />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="user_alice" />
         <Button type="submit" disabled={loading}>
           {loading ? 'Loading...' : 'Search'}
         </Button>
@@ -91,7 +84,9 @@ export function UsersClient() {
 
       {userData && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Results for: <code>{userId}</code></h2>
+          <h2 className="text-xl font-semibold">
+            Results for: <code>{userId}</code>
+          </h2>
 
           <Card>
             <CardHeader>
@@ -111,7 +106,9 @@ export function UsersClient() {
                     >
                       {a.iconUrl && <Image src={a.iconUrl} alt="" width={16} height={16} />}
                       <span className="font-medium">{a.name}</span>
-                      <Badge variant="secondary" className="text-xs">{a.points} pts</Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {a.points} pts
+                      </Badge>
                     </div>
                   ))}
                 </div>

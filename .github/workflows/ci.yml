@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - ".nvmrc"
-      - ".gitignore"
-      - "docker-compose.yml"
+      - '**/*.md'
+      - '.nvmrc'
+      - '.gitignore'
+      - 'docker-compose.yml'
   pull_request:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - ".nvmrc"
-      - ".gitignore"
-      - "docker-compose.yml"
+      - '**/*.md'
+      - '.nvmrc'
+      - '.gitignore'
+      - 'docker-compose.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

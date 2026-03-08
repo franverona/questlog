@@ -23,16 +23,14 @@ import type { RuleRow, AchievementOption } from './page'
 import type { Condition } from '@questlog/types'
 
 type Props = {
-  initialRules: RuleRow[];
-  achievements: AchievementOption[];
-};
+  initialRules: RuleRow[]
+  achievements: AchievementOption[]
+}
 
 function conditionSummary(cond: unknown): string {
   const c = cond as Condition
-  if (c.type === 'event_count')
-    return `${c.event_name} ≥ ${c.threshold}×`
-  if (c.type === 'streak')
-    return `${c.event_name} streak ≥ ${c.days} days`
+  if (c.type === 'event_count') return `${c.event_name} ≥ ${c.threshold}×`
+  if (c.type === 'streak') return `${c.event_name} streak ≥ ${c.days} days`
   if (c.type === 'combination')
     return `${c.operator}(${c.conditions.map(conditionSummary).join(', ')})`
   return 'Unknown'
@@ -151,11 +149,7 @@ export function RulesClient({ initialRules, achievements }: Props) {
                   <Button variant="outline" size="sm" onClick={() => openEdit(rule)}>
                     Edit
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(rule.id)}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(rule.id)}>
                     Delete
                   </Button>
                 </div>

@@ -4,7 +4,7 @@ import type { Db } from '@questlog/db'
 import { eq, desc } from 'drizzle-orm'
 import type { Condition } from '@questlog/types'
 
-type Env = { Variables: { db: Db } };
+type Env = { Variables: { db: Db } }
 
 export const usersRouter = new Hono<Env>()
 
@@ -74,7 +74,13 @@ usersRouter.get('/:userId/progress', async (c) => {
   // Build progress for locked achievements with event_count conditions
   const progressMap = new Map<
     string,
-    { achievement_id: string; achievement_name: string; current_count: number; threshold: number; percent: number }
+    {
+      achievement_id: string
+      achievement_name: string
+      current_count: number
+      threshold: number
+      percent: number
+    }
   >()
 
   for (const rule of allRules) {
@@ -114,7 +120,16 @@ function extractProgress(
   achievementId: string,
   achievementName: string,
   events: { eventName: string; createdAt: Date }[],
-  map: Map<string, { achievement_id: string; achievement_name: string; current_count: number; threshold: number; percent: number }>
+  map: Map<
+    string,
+    {
+      achievement_id: string
+      achievement_name: string
+      current_count: number
+      threshold: number
+      percent: number
+    }
+  >,
 ) {
   if (condition.type === 'event_count') {
     const current = events.filter((e) => e.eventName === condition.event_name).length

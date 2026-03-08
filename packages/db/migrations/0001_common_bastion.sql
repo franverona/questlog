@@ -1,0 +1,1 @@
+ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_unique" UNIQUE("external_user_id","achievement_id");

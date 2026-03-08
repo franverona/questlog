@@ -16,6 +16,7 @@ npm run dev          # start both apps in parallel
 npm run build        # build all packages
 npm run test         # run all tests (Vitest)
 npm run lint         # ESLint across the entire monorepo
+npm run db:generate  # generate SQL migration files from schema changes
 npm run db:migrate   # apply pending Drizzle migrations
 npm run db:seed      # seed demo data
 ```

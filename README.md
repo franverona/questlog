@@ -64,6 +64,15 @@ npm install
 
 ### 5. Run migrations
 
+If you modify `packages/db/src/schema.ts`, generate a new SQL migration file first:
+
+```bash
+npm run db:generate  # diff schema and write a new SQL file to packages/db/migrations/
+npm run db:migrate   # apply all pending migrations to the database
+```
+
+On a fresh setup, just run migrate (the initial migration file already exists):
+
 ```bash
 npm run db:migrate
 ```
@@ -243,14 +252,15 @@ cd apps/dashboard && npm test
 
 ## npm scripts
 
-| Script               | Description                       |
-| -------------------- | --------------------------------- |
-| `npm run dev`        | Start API + dashboard in parallel |
-| `npm run build`      | Build all packages                |
-| `npm run test`       | Run all tests                     |
-| `npm run lint`       | Run ESLint across all packages    |
-| `npm run db:migrate` | Apply pending migrations          |
-| `npm run db:seed`    | Seed demo data                    |
+| Script                | Description                                |
+| --------------------- | ------------------------------------------ |
+| `npm run dev`         | Start API + dashboard in parallel          |
+| `npm run build`       | Build all packages                         |
+| `npm run test`        | Run all tests                              |
+| `npm run lint`        | Run ESLint across all packages             |
+| `npm run db:generate` | Generate SQL migration from schema changes |
+| `npm run db:migrate`  | Apply pending migrations                   |
+| `npm run db:seed`     | Seed demo data                             |
 
 ---
 

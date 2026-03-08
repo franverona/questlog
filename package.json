@@ -12,6 +12,7 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "lint": "eslint .",
+    "db:generate": "turbo run db:generate --filter=@questlog/db",
     "db:migrate": "turbo run db:migrate --filter=@questlog/db",
     "db:seed": "turbo run db:seed --filter=@questlog/db",
     "prepare": "husky"

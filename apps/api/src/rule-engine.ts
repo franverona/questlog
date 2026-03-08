@@ -133,12 +133,10 @@ export async function evaluateRules(userId: string, db: Db): Promise<Achievement
   const uniqueToUnlock = [...new Set(toUnlock)]
 
   // 5. Insert newly unlocked achievements
-  await db.insert(userAchievements).values(
-    uniqueToUnlock.map((achievementId) => ({
-      externalUserId: userId,
-      achievementId,
-    })),
-  )
+  await db
+    .insert(userAchievements)
+    .values(uniqueToUnlock.map((achievementId) => ({ externalUserId: userId, achievementId })))
+    .onConflictDoNothing()
 
   // 6. Return the unlocked achievement details
   const newlyUnlocked = await db

@@ -6,6 +6,24 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePreferences } from '@/hooks/use-preferences'
+
+function formatDate(dateStr: string, format: 'relative' | 'absolute') {
+  const date = new Date(dateStr)
+  if (format === 'absolute') {
+    return date.toLocaleString()
+  }
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+  const diffMs = date.getTime() - Date.now()
+  const diffSec = Math.round(diffMs / 1000)
+  const diffMin = Math.round(diffSec / 60)
+  const diffHr = Math.round(diffMin / 60)
+  const diffDay = Math.round(diffHr / 24)
+  if (Math.abs(diffDay) >= 1) return rtf.format(diffDay, 'day')
+  if (Math.abs(diffHr) >= 1) return rtf.format(diffHr, 'hour')
+  if (Math.abs(diffMin) >= 1) return rtf.format(diffMin, 'minute')
+  return rtf.format(diffSec, 'second')
+}
 
 type Achievement = {
   id: string
@@ -28,6 +46,7 @@ type UserData = {
 }
 
 export function UsersClient() {
+  const { preferences } = usePreferences()
   const [userId, setUserId] = useState('')
   const [query, setQuery] = useState('')
   const [userData, setUserData] = useState<UserData | null>(null)
@@ -131,7 +150,7 @@ export function UsersClient() {
                     <div key={e.id} className="py-2 flex items-center justify-between gap-4">
                       <code className="font-mono">{e.eventName}</code>
                       <span className="text-muted-foreground text-xs">
-                        {new Date(e.createdAt).toLocaleString()}
+                        {formatDate(e.createdAt, preferences.dateFormat)}
                       </span>
                     </div>
                   ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
+import { PreferencesProvider } from '@/components/preferences-provider'
 
 export const metadata: Metadata = {
   title: 'Questlog — Gamification Dashboard',
@@ -10,10 +11,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        {children}
-        <Toaster />
+        <PreferencesProvider>
+          {children}
+          <Toaster />
+        </PreferencesProvider>
       </body>
     </html>
   )

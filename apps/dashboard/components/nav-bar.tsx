@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 const links = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/achievements', label: 'Achievements' },
+  { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/rules', label: 'Rules' },
   { href: '/users', label: 'Users' },
   { href: '/preferences', label: 'Preferences' },

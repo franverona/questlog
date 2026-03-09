@@ -1,11 +1,8 @@
-import { Hono } from 'hono'
-import type { Db } from '@questlog/db'
 import { achievements, userEvents, userAchievements } from '@questlog/db'
 import { sql } from 'drizzle-orm'
+import { createRouter } from '../types.js'
 
-type Env = { Variables: { db: Db } }
-
-export const statsRouter = new Hono<Env>()
+export const statsRouter = createRouter()
 
 statsRouter.get('/', async (c) => {
   const db = c.get('db')

@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePreferences } from '@/hooks/use-preferences'
+import { type ProgressItem } from '@questlog/types'
+import { Progress } from '@/components/ui/progress'
 
 function formatDate(dateStr: string, format: 'relative' | 'absolute') {
   const date = new Date(dateStr)
@@ -43,6 +45,7 @@ type UserEvent = {
 type UserData = {
   achievements: Achievement[]
   events: UserEvent[]
+  progress: ProgressItem[]
 }
 
 export function UsersClient() {
@@ -62,21 +65,27 @@ export function UsersClient() {
     setUserData(null)
 
     try {
-      const [achRes, eventsRes] = await Promise.all([
+      const [achRes, eventsRes, progressRes] = await Promise.all([
         fetch(`/api/users/${encodeURIComponent(query)}/achievements`),
         fetch(`/api/users/${encodeURIComponent(query)}/events`),
+        fetch(`/api/users/${encodeURIComponent(query)}/progress`),
       ])
 
-      if (!achRes.ok || !eventsRes.ok) {
+      if (!achRes.ok || !eventsRes.ok || !progressRes.ok) {
         throw new Error('Failed to load user data')
       }
 
-      const [achData, eventsData] = await Promise.all([achRes.json(), eventsRes.json()])
+      const [achData, eventsData, progressData] = await Promise.all([
+        achRes.json(),
+        eventsRes.json(),
+        progressRes.json(),
+      ])
 
       setUserId(query)
       setUserData({
         achievements: achData.data ?? [],
         events: eventsData.data ?? [],
+        progress: progressData.data?.progress ?? [],
       })
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
@@ -132,6 +141,32 @@ export function UsersClient() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">In Progress ({userData.progress.length})</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {userData.progress.map((p) => (
+                <div key={p.achievement_id} className="flex items-center gap-4">
+                  {p.achievement_icon_url ? (
+                    <Image src={p.achievement_icon_url} alt="" width={32} height={32} />
+                  ) : (
+                    <div className="bg-accent w-10 h-10 rounded-md" />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>{p.achievement_name}</span>
+                      <span className="text-muted-foreground">
+                        {p.current_count} / {p.threshold}
+                      </span>
+                    </div>
+                    <Progress value={p.percent} />
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 

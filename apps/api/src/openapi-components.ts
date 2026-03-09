@@ -25,7 +25,7 @@ export const ErrorSchema = z
 
 export const AchievementDbSchema = z
   .object({
-    id: z.string().uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+    id: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     name: z.string().openapi({ example: 'First Login' }),
     description: z
       .string()
@@ -94,8 +94,8 @@ const conditionField = z.unknown().openapi({
 // GET responses — include achievementName from the JOIN
 export const RuleWithNameDbSchema = z
   .object({
-    id: z.string().uuid().openapi({ example: 'b1c2d3e4-f5a6-7890-bcde-f01234567890' }),
-    achievementId: z.string().uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+    id: z.uuid().openapi({ example: 'b1c2d3e4-f5a6-7890-bcde-f01234567890' }),
+    achievementId: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     achievementName: z.string().openapi({ example: 'First Login' }),
     condition: conditionField,
     createdAt: z.date().openapi({ example: '2024-01-15T10:30:00.000Z' }),
@@ -105,8 +105,8 @@ export const RuleWithNameDbSchema = z
 // POST/PUT/DELETE responses — raw .returning() rows, no JOIN
 export const RuleDbSchema = z
   .object({
-    id: z.string().uuid().openapi({ example: 'b1c2d3e4-f5a6-7890-bcde-f01234567890' }),
-    achievementId: z.string().uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+    id: z.uuid().openapi({ example: 'b1c2d3e4-f5a6-7890-bcde-f01234567890' }),
+    achievementId: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     condition: conditionField,
     createdAt: z.date().openapi({ example: '2024-01-15T10:30:00.000Z' }),
   })
@@ -157,7 +157,7 @@ export const UnlockedAchievementSchema = z
 
 export const ProgressItemDbSchema = z
   .object({
-    achievement_id: z.string().uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+    achievement_id: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     achievement_name: z.string().openapi({ example: 'Login Streak' }),
     achievement_icon_url: z.string().nullable().openapi({ example: null }),
     current_count: z.number().int().nonnegative().openapi({ example: 3 }),
@@ -168,7 +168,7 @@ export const ProgressItemDbSchema = z
 
 export const UserEventDbSchema = z
   .object({
-    id: z.string().uuid().openapi({ example: 'c1d2e3f4-a5b6-7890-cdef-012345678901' }),
+    id: z.uuid().openapi({ example: 'c1d2e3f4-a5b6-7890-cdef-012345678901' }),
     externalUserId: z.string().openapi({ example: 'user_abc123' }),
     eventName: z.string().openapi({ example: 'level_completed' }),
     metadata: z.unknown().openapi({ example: { level: 5, score: 1200 } }),

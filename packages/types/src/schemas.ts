@@ -47,7 +47,7 @@ export const CombinationConditionSchema: z.ZodType<CombinationCondition> = z.obj
 // ─── Achievement ──────────────────────────────────────────────────────────────
 
 export const AchievementSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1),
   description: z.string().nullable().optional(),
   iconUrl: z.string().url().nullable().optional(),
@@ -69,8 +69,8 @@ export type CreateAchievement = z.infer<typeof CreateAchievementSchema>
 // ─── Rule ─────────────────────────────────────────────────────────────────────
 
 export const RuleSchema = z.object({
-  id: z.string().uuid(),
-  achievementId: z.string().uuid(),
+  id: z.uuid(),
+  achievementId: z.uuid(),
   condition: ConditionSchema,
   createdAt: z.date().or(z.string()),
 })
@@ -111,7 +111,7 @@ export type ApiResponse<T> =
 // ─── Progress ─────────────────────────────────────────────────────────────────
 
 export const ProgressItemSchema = z.object({
-  achievement_id: z.string().uuid(),
+  achievement_id: z.uuid(),
   achievement_name: z.string(),
   achievement_icon_url: z.string().nullable(),
   current_count: z.number().int().nonnegative(),

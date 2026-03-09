@@ -1,13 +1,10 @@
-import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { TrackEventSchema } from '@questlog/types'
 import { userEvents } from '@questlog/db'
-import type { Db } from '@questlog/db'
 import { evaluateRules } from '../rule-engine.js'
+import { createRouter } from '../types.js'
 
-type Env = { Variables: { db: Db } }
-
-export const eventsRouter = new Hono<Env>()
+export const eventsRouter = createRouter()
 
 eventsRouter.post('/track', zValidator('json', TrackEventSchema), async (c) => {
   const db = c.get('db')

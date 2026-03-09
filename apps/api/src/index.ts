@@ -1,5 +1,4 @@
 import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
 import { createDb } from '@questlog/db'
 import { apiKeyAuth } from './middleware/auth.js'
 import { rateLimit } from './middleware/rate-limit.js'
@@ -11,6 +10,7 @@ import { leaderboardRouter } from './routes/leaderboard.js'
 import { achievementsRouter } from './routes/achievements.js'
 import { rulesRouter } from './routes/rules.js'
 import { statsRouter } from './routes/stats.js'
+import { createRouter } from './types.js'
 
 const databaseUrl = process.env.DATABASE_URL
 if (!databaseUrl) {
@@ -19,9 +19,7 @@ if (!databaseUrl) {
 
 const db = createDb(databaseUrl)
 
-type Env = { Variables: { db: ReturnType<typeof createDb> } }
-
-const app = new Hono<Env>()
+const app = createRouter()
 
 // Global middleware
 app.use('*', requestLogger())
@@ -34,7 +32,7 @@ app.use('*', async (c, next) => {
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
 // Authenticated v1 routes
-const v1 = new Hono<Env>()
+const v1 = createRouter()
 v1.use('*', apiKeyAuth())
 v1.use('*', rateLimit(100, 60_000)) // 100 requests per minute, per API key
 

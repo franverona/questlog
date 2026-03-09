@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint'
 import pluginNext from '@next/eslint-plugin-next'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import configPrettier from 'eslint-config-prettier'
+import unusedImports from 'eslint-plugin-unused-imports'
 
 export default tseslint.config(
   // Global ignores
@@ -41,6 +42,9 @@ export default tseslint.config(
 
   // Global rule overrides
   {
+    plugins: {
+      'unused-imports': unusedImports,
+    },
     rules: {
       'no-restricted-syntax': [
         'error',
@@ -49,6 +53,7 @@ export default tseslint.config(
           message: 'Use ES6 import/export syntax instead of CommonJS require.',
         },
       ],
+      'unused-imports/no-unused-imports': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

@@ -1,12 +1,9 @@
-import { Hono } from 'hono'
 import { userAchievements, userEvents, achievements, rules } from '@questlog/db'
-import type { Db } from '@questlog/db'
 import { eq, desc } from 'drizzle-orm'
 import type { Condition } from '@questlog/types'
+import { createRouter } from '../types.js'
 
-type Env = { Variables: { db: Db } }
-
-export const usersRouter = new Hono<Env>()
+export const usersRouter = createRouter()
 
 // GET /v1/users/:userId/achievements
 usersRouter.get('/:userId/achievements', async (c) => {

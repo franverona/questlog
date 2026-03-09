@@ -1,5 +1,5 @@
 import { createDb } from './client.js'
-import { achievements, rules, userEvents, userAchievements } from './schema.js'
+import { events, achievements, rules, userEvents, userAchievements } from './schema.js'
 
 const connectionString = process.env.DATABASE_URL
 if (!connectionString) {
@@ -13,6 +13,16 @@ await db.delete(userAchievements)
 await db.delete(userEvents)
 await db.delete(rules)
 await db.delete(achievements)
+await db.delete(events)
+
+console.log('Seeding events...')
+
+await db.insert(events).values([
+  { name: 'user.login', description: 'User logged in' },
+  { name: 'purchase.completed', description: 'User completed a purchase' },
+  { name: 'product.viewed', description: 'User viewed a product page' },
+  { name: 'search.performed', description: 'User performed a search' },
+])
 
 console.log('Seeding achievements...')
 
@@ -186,10 +196,27 @@ const charlieEvents = [
 
 await db.insert(userEvents).values([...aliceEvents, ...bobEvents, ...charlieEvents])
 
+console.log('Seeding user achievements...')
+
+await db.insert(userAchievements).values([
+  // user_alice: 10 logins (7-day streak), 1 purchase → all 4 achievements
+  { externalUserId: 'user_alice', achievementId: firstLogin!.id, unlockedAt: daysAgo(9) },
+  { externalUserId: 'user_alice', achievementId: tenLogins!.id, unlockedAt: daysAgo(0) },
+  { externalUserId: 'user_alice', achievementId: streakWeek!.id, unlockedAt: daysAgo(0) },
+  { externalUserId: 'user_alice', achievementId: powerUser!.id, unlockedAt: daysAgo(1) },
+  // user_bob: 5 logins, 3 product views → First Steps + Explorer
+  { externalUserId: 'user_bob', achievementId: firstLogin!.id, unlockedAt: daysAgo(13) },
+  { externalUserId: 'user_bob', achievementId: explorer!.id, unlockedAt: daysAgo(0) },
+  // user_charlie: 1 login, 5 searches → First Steps + Explorer
+  { externalUserId: 'user_charlie', achievementId: firstLogin!.id, unlockedAt: daysAgo(0) },
+  { externalUserId: 'user_charlie', achievementId: explorer!.id, unlockedAt: daysAgo(0) },
+])
+
 console.log('Seed complete!')
-console.log('  user_alice: 10 logins (7-day streak), 1 purchase')
-console.log('  user_bob: 5 logins, 3 product views')
-console.log('  user_charlie: 1 login, 5 searches')
-console.log('\nRun the rule evaluator manually or track a new event to see achievements unlock.')
+console.log(
+  '  user_alice: 10 logins (7-day streak), 1 purchase → First Steps, Loyal User, 7-Day Streak, Power User',
+)
+console.log('  user_bob: 5 logins, 3 product views → First Steps, Explorer')
+console.log('  user_charlie: 1 login, 5 searches → First Steps, Explorer')
 
 process.exit(0)

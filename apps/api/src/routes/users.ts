@@ -1,14 +1,52 @@
 import { userAchievements, userEvents, achievements, rules } from '@questlog/db'
 import { eq, desc } from 'drizzle-orm'
+import { createRoute, z } from '@hono/zod-openapi'
 import type { Condition } from '@questlog/types'
 import { createRouter } from '../types.js'
+import {
+  AchievementDbSchema,
+  ProgressItemDbSchema,
+  UserEventDbSchema,
+  ErrorSchema,
+} from '../openapi-components.js'
+
+const UserIdParamSchema = z.object({ userId: z.string().min(1) })
 
 export const usersRouter = createRouter()
 
-// GET /v1/users/:userId/achievements
-usersRouter.get('/:userId/achievements', async (c) => {
+// ─── GET /{userId}/achievements ───────────────────────────────────────────────
+
+const userAchievementsRoute = createRoute({
+  operationId: 'getUserAchievements',
+  summary: 'Get user achievements',
+  method: 'get',
+  path: '/{userId}/achievements',
+  tags: ['users'],
+  security: [{ ApiKey: [] }],
+  request: { params: UserIdParamSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(AchievementDbSchema),
+            error: z.null(),
+            meta: z.object({ total: z.number().int() }),
+          }),
+        },
+      },
+      description: "User's unlocked achievements",
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+usersRouter.openapi(userAchievementsRoute, async (c) => {
   const db = c.get('db')
-  const userId = c.req.param('userId')
+  const { userId } = c.req.valid('param')
 
   const rows = await db
     .select({
@@ -24,19 +62,46 @@ usersRouter.get('/:userId/achievements', async (c) => {
     .where(eq(userAchievements.externalUserId, userId))
     .orderBy(desc(userAchievements.unlockedAt))
 
-  return c.json({
-    data: rows,
-    error: null,
-    meta: { total: rows.length },
-  })
+  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
 })
 
-// GET /v1/users/:userId/progress
-usersRouter.get('/:userId/progress', async (c) => {
-  const db = c.get('db')
-  const userId = c.req.param('userId')
+// ─── GET /{userId}/progress ───────────────────────────────────────────────────
 
-  // Unlocked achievements
+const userProgressRoute = createRoute({
+  operationId: 'getUserProgress',
+  summary: 'Get user progress',
+  method: 'get',
+  path: '/{userId}/progress',
+  tags: ['users'],
+  security: [{ ApiKey: [] }],
+  request: { params: UserIdParamSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.object({
+              unlocked: z.array(AchievementDbSchema),
+              progress: z.array(ProgressItemDbSchema),
+            }),
+            error: z.null(),
+            meta: z.null(),
+          }),
+        },
+      },
+      description: "User's unlocked achievements and progress toward locked ones",
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+usersRouter.openapi(userProgressRoute, async (c) => {
+  const db = c.get('db')
+  const { userId } = c.req.valid('param')
+
   const unlockedRows = await db
     .select({
       id: achievements.id,
@@ -52,13 +117,11 @@ usersRouter.get('/:userId/progress', async (c) => {
 
   const unlockedIds = new Set(unlockedRows.map((r) => r.id))
 
-  // User events for progress calculation
   const eventRows = await db
     .select({ eventName: userEvents.eventName, createdAt: userEvents.createdAt })
     .from(userEvents)
     .where(eq(userEvents.externalUserId, userId))
 
-  // All rules for locked achievements
   const allRules = await db
     .select({
       achievementId: rules.achievementId,
@@ -69,13 +132,12 @@ usersRouter.get('/:userId/progress', async (c) => {
     .from(rules)
     .innerJoin(achievements, eq(rules.achievementId, achievements.id))
 
-  // Build progress for locked achievements with event_count conditions
   const progressMap = new Map<
     string,
     {
       achievement_id: string
       achievement_name: string
-      achievement_icon_url: string
+      achievement_icon_url: string | null
       current_count: number
       threshold: number
       percent: number
@@ -84,7 +146,6 @@ usersRouter.get('/:userId/progress', async (c) => {
 
   for (const rule of allRules) {
     if (unlockedIds.has(rule.achievementId)) continue
-
     const condition = rule.condition as Condition
     extractProgress(
       condition,
@@ -96,20 +157,49 @@ usersRouter.get('/:userId/progress', async (c) => {
     )
   }
 
-  return c.json({
-    data: {
-      unlocked: unlockedRows,
-      progress: [...progressMap.values()],
+  return c.json(
+    {
+      data: { unlocked: unlockedRows, progress: [...progressMap.values()] },
+      error: null,
+      meta: null,
     },
-    error: null,
-    meta: null,
-  })
+    200,
+  )
 })
 
-// GET /v1/users/:userId/events
-usersRouter.get('/:userId/events', async (c) => {
+// ─── GET /{userId}/events ─────────────────────────────────────────────────────
+
+const userEventsRoute = createRoute({
+  operationId: 'getUserEvents',
+  summary: 'Get user events',
+  method: 'get',
+  path: '/{userId}/events',
+  tags: ['users'],
+  security: [{ ApiKey: [] }],
+  request: { params: UserIdParamSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(UserEventDbSchema),
+            error: z.null(),
+            meta: z.object({ total: z.number().int() }),
+          }),
+        },
+      },
+      description: 'Last 50 events for the user',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+usersRouter.openapi(userEventsRoute, async (c) => {
   const db = c.get('db')
-  const userId = c.req.param('userId')
+  const { userId } = c.req.valid('param')
 
   const rows = await db
     .select()
@@ -118,7 +208,7 @@ usersRouter.get('/:userId/events', async (c) => {
     .orderBy(desc(userEvents.createdAt))
     .limit(50)
 
-  return c.json({ data: rows, error: null, meta: { total: rows.length } })
+  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
 })
 
 function extractProgress(
@@ -143,9 +233,7 @@ function extractProgress(
     const current = events.filter((e) => e.eventName === condition.event_name).length
     const threshold = condition.threshold
     const percent = Math.min(100, Math.round((current / threshold) * 100))
-
     const existing = map.get(achievementId)
-    // Keep the entry that is "most meaningful" — highest percent
     if (!existing || percent > existing.percent) {
       map.set(achievementId, {
         achievement_id: achievementId,

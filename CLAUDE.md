@@ -4,7 +4,7 @@
 
 Gamification-as-a-Service platform. Turborepo monorepo with:
 
-- `apps/api` — Hono REST API (port 3001)
+- `apps/api` — Hono REST API (port 3001). OpenAPI 3.1 spec at `GET /openapi.json`; Swagger UI at `GET /docs`.
 - `apps/dashboard` — Next.js 16 App Router dashboard (port 3000)
 - `packages/db` — Drizzle ORM schema + migrations
 - `packages/types` — Zod schemas and inferred TypeScript types shared across all packages
@@ -48,6 +48,8 @@ cd apps/dashboard && npm test
 **Next.js env loading**: The dashboard dev/build scripts use `dotenv-cli` to load the root `.env` file (`dotenv -e ../../.env -- next ...`). Next.js does not automatically load `.env` from the monorepo root.
 
 **ESM + webpack**: `packages/types` uses `.js` extensions in imports (required for Node.js ESM). Next.js/webpack resolves these via `extensionAlias` in `apps/dashboard/next.config.ts` — do not remove that config.
+
+**OpenAPI**: All API routes use `createRoute` + `router.openapi()` from `@hono/zod-openapi`. Shared named-component schemas live in `apps/api/src/openapi-components.ts` — import from there instead of defining inline schemas in route files. `createRouter()` in `apps/api/src/types.ts` sets a `defaultHook` that formats Zod validation errors as the standard error envelope with `code: 'VALIDATION_ERROR'`. `ConditionSchema` uses `z.lazy()` for recursion and cannot be serialised to a static JSON Schema; `ConditionOpenAPISchema` in `openapi-components.ts` is the non-recursive OpenAPI-only version — do not use `ConditionSchema` in route definitions.
 
 ## Code conventions
 

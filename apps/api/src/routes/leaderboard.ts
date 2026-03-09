@@ -1,10 +1,39 @@
 import { userAchievements, achievements } from '@questlog/db'
 import { eq, sql, desc } from 'drizzle-orm'
+import { createRoute, z } from '@hono/zod-openapi'
 import { createRouter } from '../types.js'
+import { LeaderboardEntryDbSchema, ErrorSchema } from '../openapi-components.js'
 
 export const leaderboardRouter = createRouter()
 
-leaderboardRouter.get('/', async (c) => {
+const leaderboardRoute = createRoute({
+  operationId: 'getLeaderboard',
+  summary: 'Get leaderboard',
+  method: 'get',
+  path: '/',
+  tags: ['leaderboard'],
+  security: [{ ApiKey: [] }],
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(LeaderboardEntryDbSchema),
+            error: z.null(),
+            meta: z.null(),
+          }),
+        },
+      },
+      description: 'Top 20 users ranked by total achievement points',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+leaderboardRouter.openapi(leaderboardRoute, async (c) => {
   const db = c.get('db')
 
   const rows = await db
@@ -24,5 +53,5 @@ leaderboardRouter.get('/', async (c) => {
     total_points: row.total_points,
   }))
 
-  return c.json({ data: ranked, error: null, meta: null })
+  return c.json({ data: ranked, error: null, meta: null }, 200)
 })

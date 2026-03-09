@@ -63,6 +63,7 @@ usersRouter.get('/:userId/progress', async (c) => {
     .select({
       achievementId: rules.achievementId,
       achievementName: achievements.name,
+      achievementIconUrl: achievements.iconUrl,
       condition: rules.condition,
     })
     .from(rules)
@@ -74,6 +75,7 @@ usersRouter.get('/:userId/progress', async (c) => {
     {
       achievement_id: string
       achievement_name: string
+      achievement_icon_url: string
       current_count: number
       threshold: number
       percent: number
@@ -84,7 +86,14 @@ usersRouter.get('/:userId/progress', async (c) => {
     if (unlockedIds.has(rule.achievementId)) continue
 
     const condition = rule.condition as Condition
-    extractProgress(condition, rule.achievementId, rule.achievementName, eventRows, progressMap)
+    extractProgress(
+      condition,
+      rule.achievementId,
+      rule.achievementName,
+      rule.achievementIconUrl,
+      eventRows,
+      progressMap,
+    )
   }
 
   return c.json({
@@ -116,12 +125,14 @@ function extractProgress(
   condition: Condition,
   achievementId: string,
   achievementName: string,
+  achievementIconUrl: string | null,
   events: { eventName: string; createdAt: Date }[],
   map: Map<
     string,
     {
       achievement_id: string
       achievement_name: string
+      achievement_icon_url: string | null
       current_count: number
       threshold: number
       percent: number
@@ -139,6 +150,7 @@ function extractProgress(
       map.set(achievementId, {
         achievement_id: achievementId,
         achievement_name: achievementName,
+        achievement_icon_url: achievementIconUrl,
         current_count: current,
         threshold,
         percent,
@@ -146,7 +158,7 @@ function extractProgress(
     }
   } else if (condition.type === 'combination') {
     for (const c of condition.conditions) {
-      extractProgress(c, achievementId, achievementName, events, map)
+      extractProgress(c, achievementId, achievementName, achievementIconUrl, events, map)
     }
   }
 }

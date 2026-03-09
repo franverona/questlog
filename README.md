@@ -2,20 +2,23 @@
 
 A full-stack Gamification-as-a-Service platform with a REST API and management dashboard.
 
+[![CI](https://github.com/franverona/questlog/actions/workflows/ci.yml/badge.svg)](https://github.com/franverona/questlog/actions/workflows/ci.yml)
+
 ## Stack
 
-| Layer      | Tech                                 |
-| ---------- | ------------------------------------ |
-| API        | Hono + Node.js (port 3001)           |
-| Dashboard  | Next.js 16 App Router (port 3000)    |
-| Database   | PostgreSQL + Drizzle ORM             |
-| Monorepo   | Turborepo                            |
-| Language   | TypeScript everywhere                |
-| Linting    | ESLint 10 (flat config)              |
-| Formatting | Prettier (defaults, via lint-staged) |
-| Commits    | Conventional Commits via commitlint  |
-| Git hooks  | Husky + lint-staged                  |
-| CI         | GitHub Actions                       |
+| Layer      | Tech                                            |
+| ---------- | ----------------------------------------------- |
+| API        | Hono + Node.js (port 3001)                      |
+| API docs   | OpenAPI 3.1 via `@hono/zod-openapi`, Swagger UI |
+| Dashboard  | Next.js 16 App Router (port 3000)               |
+| Database   | PostgreSQL + Drizzle ORM                        |
+| Monorepo   | Turborepo                                       |
+| Language   | TypeScript everywhere                           |
+| Linting    | ESLint 10 (flat config)                         |
+| Formatting | Prettier (defaults, via lint-staged)            |
+| Commits    | Conventional Commits via commitlint             |
+| Git hooks  | Husky + lint-staged                             |
+| CI         | GitHub Actions                                  |
 
 ## Project structure
 
@@ -93,12 +96,17 @@ npm run dev
 
 - Dashboard: http://localhost:3000
 - API: http://localhost:3001
+- API docs (Swagger UI): http://localhost:3001/docs
 
 **Login password**: whatever you set as `API_SECRET` in `.env`
 
 ---
 
 ## API Reference
+
+The interactive Swagger UI at **http://localhost:3001/docs** is the canonical reference — it documents every endpoint, request body, response schema, and lets you call the API directly from the browser. The machine-readable OpenAPI 3.1 spec is at **http://localhost:3001/openapi.json**.
+
+The curl examples below are a quick-start complement to the docs.
 
 All routes require `x-api-key: <API_SECRET>` header (or `Authorization: Bearer <API_SECRET>`).
 
@@ -244,7 +252,7 @@ cd apps/api && npm test
 cd apps/dashboard && npm test
 ```
 
-**API** — 20 unit tests covering all condition types, AND/OR combinations, edge cases (zero events, duplicate days in streaks, broken streaks, already-unlocked achievements).
+**API** — 30 unit tests: 20 for the rule engine (all condition types, AND/OR combinations, edge cases including zero events, duplicate days in streaks, broken streaks, and already-unlocked achievements), plus tests for route handlers and rate limiting.
 
 **Dashboard** — 14 unit tests for the catch-all proxy route: auth enforcement, URL/query-string construction, method-specific body forwarding, status passthrough, and non-JSON upstream error handling.
 

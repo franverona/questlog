@@ -1,12 +1,48 @@
 import { rules, achievements } from '@questlog/db'
 import { eq } from 'drizzle-orm'
-import { zValidator } from '@hono/zod-validator'
-import { CreateRuleSchema } from '@questlog/types'
+import { createRoute, z } from '@hono/zod-openapi'
 import { createRouter } from '../types.js'
+import {
+  RuleWithNameDbSchema,
+  RuleDbSchema,
+  CreateRuleOpenAPISchema,
+  ErrorSchema,
+} from '../openapi-components.js'
+
+const IdParamSchema = z.object({ id: z.string() })
 
 export const rulesRouter = createRouter()
 
-rulesRouter.get('/', async (c) => {
+// ─── GET / ────────────────────────────────────────────────────────────────────
+
+const listRoute = createRoute({
+  operationId: 'listRules',
+  summary: 'List rules',
+  method: 'get',
+  path: '/',
+  tags: ['rules'],
+  security: [{ ApiKey: [] }],
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(RuleWithNameDbSchema),
+            error: z.null(),
+            meta: z.object({ total: z.number().int() }),
+          }),
+        },
+      },
+      description: 'List of rules',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+rulesRouter.openapi(listRoute, async (c) => {
   const db = c.get('db')
   const rows = await db
     .select({
@@ -19,12 +55,42 @@ rulesRouter.get('/', async (c) => {
     .from(rules)
     .innerJoin(achievements, eq(rules.achievementId, achievements.id))
 
-  return c.json({ data: rows, error: null, meta: { total: rows.length } })
+  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
 })
 
-rulesRouter.get('/:id', async (c) => {
+// ─── GET /{id} ────────────────────────────────────────────────────────────────
+
+const getRoute = createRoute({
+  operationId: 'getRule',
+  summary: 'Get rule by ID',
+  method: 'get',
+  path: '/{id}',
+  tags: ['rules'],
+  security: [{ ApiKey: [] }],
+  request: { params: IdParamSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({ data: RuleWithNameDbSchema, error: z.null(), meta: z.null() }),
+        },
+      },
+      description: 'Rule details',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+    404: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Rule not found',
+    },
+  },
+})
+
+rulesRouter.openapi(getRoute, async (c) => {
   const db = c.get('db')
-  const id = c.req.param('id')
+  const { id } = c.req.valid('param')
 
   const [row] = await db
     .select({
@@ -45,10 +111,45 @@ rulesRouter.get('/:id', async (c) => {
     )
   }
 
-  return c.json({ data: row, error: null, meta: null })
+  return c.json({ data: row, error: null, meta: null }, 200)
 })
 
-rulesRouter.post('/', zValidator('json', CreateRuleSchema), async (c) => {
+// ─── POST / ───────────────────────────────────────────────────────────────────
+
+const createRuleRoute = createRoute({
+  operationId: 'createRule',
+  summary: 'Create rule',
+  method: 'post',
+  path: '/',
+  tags: ['rules'],
+  security: [{ ApiKey: [] }],
+  request: {
+    body: {
+      content: { 'application/json': { schema: CreateRuleOpenAPISchema } },
+      required: true,
+    },
+  },
+  responses: {
+    201: {
+      content: {
+        'application/json': {
+          schema: z.object({ data: RuleDbSchema, error: z.null(), meta: z.null() }),
+        },
+      },
+      description: 'Rule created',
+    },
+    400: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Validation error',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+  },
+})
+
+rulesRouter.openapi(createRuleRoute, async (c) => {
   const db = c.get('db')
   const body = c.req.valid('json')
 
@@ -63,9 +164,49 @@ rulesRouter.post('/', zValidator('json', CreateRuleSchema), async (c) => {
   return c.json({ data: row, error: null, meta: null }, 201)
 })
 
-rulesRouter.put('/:id', zValidator('json', CreateRuleSchema), async (c) => {
+// ─── PUT /{id} ────────────────────────────────────────────────────────────────
+
+const updateRuleRoute = createRoute({
+  operationId: 'updateRule',
+  summary: 'Update rule',
+  method: 'put',
+  path: '/{id}',
+  tags: ['rules'],
+  security: [{ ApiKey: [] }],
+  request: {
+    params: IdParamSchema,
+    body: {
+      content: { 'application/json': { schema: CreateRuleOpenAPISchema } },
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({ data: RuleDbSchema, error: z.null(), meta: z.null() }),
+        },
+      },
+      description: 'Rule updated',
+    },
+    400: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Validation error',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+    404: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Rule not found',
+    },
+  },
+})
+
+rulesRouter.openapi(updateRuleRoute, async (c) => {
   const db = c.get('db')
-  const id = c.req.param('id')
+  const { id } = c.req.valid('param')
   const body = c.req.valid('json')
 
   const [row] = await db
@@ -84,12 +225,42 @@ rulesRouter.put('/:id', zValidator('json', CreateRuleSchema), async (c) => {
     )
   }
 
-  return c.json({ data: row, error: null, meta: null })
+  return c.json({ data: row, error: null, meta: null }, 200)
 })
 
-rulesRouter.delete('/:id', async (c) => {
+// ─── DELETE /{id} ─────────────────────────────────────────────────────────────
+
+const deleteRuleRoute = createRoute({
+  operationId: 'deleteRule',
+  summary: 'Delete rule',
+  method: 'delete',
+  path: '/{id}',
+  tags: ['rules'],
+  security: [{ ApiKey: [] }],
+  request: { params: IdParamSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: z.object({ data: RuleDbSchema, error: z.null(), meta: z.null() }),
+        },
+      },
+      description: 'Rule deleted',
+    },
+    401: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Missing or invalid API key',
+    },
+    404: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Rule not found',
+    },
+  },
+})
+
+rulesRouter.openapi(deleteRuleRoute, async (c) => {
   const db = c.get('db')
-  const id = c.req.param('id')
+  const { id } = c.req.valid('param')
 
   const [row] = await db.delete(rules).where(eq(rules.id, id)).returning()
 
@@ -100,5 +271,5 @@ rulesRouter.delete('/:id', async (c) => {
     )
   }
 
-  return c.json({ data: row, error: null, meta: null })
+  return c.json({ data: row, error: null, meta: null }, 200)
 })

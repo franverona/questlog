@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server'
+import { swaggerUI } from '@hono/swagger-ui'
 import { createDb } from '@questlog/db'
 import { apiKeyAuth } from './middleware/auth.js'
 import { rateLimit } from './middleware/rate-limit.js'
@@ -21,6 +22,13 @@ const db = createDb(databaseUrl)
 
 const app = createRouter()
 
+// Register API key security scheme for Swagger UI
+app.openAPIRegistry.registerComponent('securitySchemes', 'ApiKey', {
+  type: 'apiKey',
+  in: 'header',
+  name: 'x-api-key',
+})
+
 // Global middleware
 app.use('*', requestLogger())
 app.use('*', async (c, next) => {
@@ -30,6 +38,22 @@ app.use('*', async (c, next) => {
 
 // Health check (no auth)
 app.get('/health', (c) => c.json({ status: 'ok' }))
+
+// OpenAPI spec and Swagger UI (no auth)
+app.doc31('/openapi.json', {
+  openapi: '3.1.0',
+  info: { title: 'Questlog API', version: '1.0.0' },
+  servers: [{ url: 'http://localhost:3001', description: 'Local development' }],
+  tags: [
+    { name: 'achievements', description: 'Manage achievement definitions' },
+    { name: 'rules', description: 'Condition rules that unlock achievements' },
+    { name: 'events', description: 'Track user events and trigger rule evaluation' },
+    { name: 'users', description: 'Per-user achievements, progress, and event history' },
+    { name: 'leaderboard', description: 'Top users ranked by total achievement points' },
+    { name: 'stats', description: 'Aggregate platform statistics' },
+  ],
+})
+app.get('/docs', swaggerUI({ url: '/openapi.json' }))
 
 // Authenticated v1 routes
 const v1 = createRouter()

@@ -1,4 +1,4 @@
-import { get } from '@/lib/api'
+import { get, type PaginationMeta } from '@/lib/api'
 import { RulesClient } from './rules-client'
 
 export type RuleRow = {
@@ -14,15 +14,32 @@ export type AchievementOption = {
   name: string
 }
 
-async function getData() {
+async function getData(page: string, perPage: string) {
   const [rulesRes, achievementsRes] = await Promise.all([
-    get<RuleRow[]>('/v1/rules').catch(() => ({ data: [] })),
-    get<AchievementOption[]>('/v1/achievements').catch(() => ({ data: [] })),
+    get<RuleRow[]>(`/v1/rules?page=${page}&perPage=${perPage}`).catch(() => ({
+      data: [],
+      meta: null,
+    })),
+    get<AchievementOption[]>('/v1/achievements?perPage=100').catch(() => ({
+      data: [],
+      meta: null,
+    })),
   ])
-  return { rules: rulesRes.data, achievements: achievementsRes.data }
+  return { rules: rulesRes.data, meta: rulesRes.meta, achievements: achievementsRes.data }
 }
 
-export default async function RulesPage() {
-  const { rules, achievements } = await getData()
-  return <RulesClient initialRules={rules} achievements={achievements} />
+export default async function RulesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; perPage?: string }>
+}) {
+  const { page = '1', perPage = '20' } = await searchParams
+  const { rules, meta, achievements } = await getData(page, perPage)
+  return (
+    <RulesClient
+      initialRules={rules}
+      meta={meta as PaginationMeta | null}
+      achievements={achievements}
+    />
+  )
 }

@@ -21,9 +21,12 @@ import {
 import { ConditionBuilder } from './condition-builder'
 import type { RuleRow, AchievementOption } from './page'
 import type { Condition } from '@questlog/types'
+import type { PaginationMeta } from '@/lib/api'
+import { Pagination } from '@/components/pagination'
 
 type Props = {
   initialRules: RuleRow[]
+  meta: PaginationMeta | null
   achievements: AchievementOption[]
 }
 
@@ -56,7 +59,7 @@ const DEFAULT_CONDITION: Condition = {
   threshold: 1,
 }
 
-export function RulesClient({ initialRules, achievements }: Props) {
+export function RulesClient({ initialRules, meta, achievements }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<RuleRow | null>(null)
@@ -127,7 +130,7 @@ export function RulesClient({ initialRules, achievements }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Rules</h1>
-          <p className="text-muted-foreground mt-1">Grouped by achievement</p>
+          <p className="text-muted-foreground mt-1">{meta?.total ?? initialRules.length} total</p>
         </div>
         <Button onClick={openCreate}>New Rule</Button>
       </div>
@@ -137,6 +140,8 @@ export function RulesClient({ initialRules, achievements }: Props) {
           No rules yet. Create your first rule!
         </p>
       )}
+
+      {grouped.length > 0 && meta && <Pagination page={meta.page} totalPages={meta.totalPages} />}
 
       {grouped.map((group) => (
         <div key={group.id} className="border rounded-lg overflow-hidden">

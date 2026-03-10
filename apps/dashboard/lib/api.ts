@@ -20,10 +20,17 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   return res.json() as Promise<T>
 }
 
+export type PaginationMeta = {
+  total: number
+  page: number
+  perPage: number
+  totalPages: number
+}
+
 export type ApiEnvelope<T> = {
   data: T
   error: null
-  meta: { total?: number } | null
+  meta: PaginationMeta | null
 }
 
 export function get<T>(path: string) {

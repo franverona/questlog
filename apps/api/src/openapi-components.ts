@@ -21,6 +21,24 @@ export const ErrorSchema = z
   })
   .openapi('Error')
 
+// Pagination
+
+export const PaginationQuerySchema = z
+  .object({
+    page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+    perPage: z.coerce.number().int().min(1).max(100).default(20).openapi({ example: 20 }),
+  })
+  .openapi('PaginationQuery')
+
+export const PaginationMetaSchema = z
+  .object({
+    total: z.coerce.number().int().openapi({ example: 500 }),
+    page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+    perPage: z.coerce.number().int().min(1).max(100).openapi({ example: 10 }),
+    totalPages: z.coerce.number().int().openapi({ example: 50 }),
+  })
+  .openapi('PaginationMeta')
+
 // ─── Achievement ──────────────────────────────────────────────────────────────
 
 export const AchievementDbSchema = z

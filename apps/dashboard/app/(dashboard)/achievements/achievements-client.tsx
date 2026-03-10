@@ -18,11 +18,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import type { AchievementRow } from './page'
+import type { PaginationMeta } from '@/lib/api'
+import { Pagination } from '@/components/pagination'
 import { toast } from 'sonner'
 
-type Props = { initialAchievements: AchievementRow[] }
+type Props = { initialAchievements: AchievementRow[]; meta: PaginationMeta | null }
 
-export function AchievementsClient({ initialAchievements }: Props) {
+export function AchievementsClient({ initialAchievements, meta }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<AchievementRow | null>(null)
@@ -96,7 +98,9 @@ export function AchievementsClient({ initialAchievements }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Achievements</h1>
-          <p className="text-muted-foreground mt-1">{initialAchievements.length} total</p>
+          <p className="text-muted-foreground mt-1">
+            {meta?.total ?? initialAchievements.length} total
+          </p>
         </div>
         <Button onClick={openCreate}>New Achievement</Button>
       </div>
@@ -129,6 +133,8 @@ export function AchievementsClient({ initialAchievements }: Props) {
           No achievements yet. Create your first one!
         </p>
       )}
+
+      {meta && <Pagination page={meta.page} totalPages={meta.totalPages} />}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>

@@ -1,5 +1,5 @@
 import { userAchievements, userEvents, achievements, rules } from '@questlog/db'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, sql } from 'drizzle-orm'
 import { createRoute, z } from '@hono/zod-openapi'
 import type { Condition } from '@questlog/types'
 import { createRouter } from '../types.js'
@@ -8,7 +8,10 @@ import {
   ProgressItemDbSchema,
   UserEventDbSchema,
   ErrorSchema,
+  PaginationMetaSchema,
+  PaginationQuerySchema,
 } from '../openapi-components.js'
+import { parsePagination, totalPages } from '../lib/pagination.js'
 
 const UserIdParamSchema = z.object({ userId: z.string().min(1) })
 
@@ -23,7 +26,7 @@ const userAchievementsRoute = createRoute({
   path: '/{userId}/achievements',
   tags: ['users'],
   security: [{ ApiKey: [] }],
-  request: { params: UserIdParamSchema },
+  request: { params: UserIdParamSchema, query: PaginationQuerySchema },
   responses: {
     200: {
       content: {
@@ -31,7 +34,7 @@ const userAchievementsRoute = createRoute({
           schema: z.object({
             data: z.array(AchievementDbSchema),
             error: z.null(),
-            meta: z.object({ total: z.number().int() }),
+            meta: PaginationMetaSchema,
           }),
         },
       },
@@ -46,23 +49,45 @@ const userAchievementsRoute = createRoute({
 
 usersRouter.openapi(userAchievementsRoute, async (c) => {
   const db = c.get('db')
+  const { page, perPage, offset } = parsePagination(c.req.valid('query'))
   const { userId } = c.req.valid('param')
 
-  const rows = await db
-    .select({
-      id: achievements.id,
-      name: achievements.name,
-      description: achievements.description,
-      iconUrl: achievements.iconUrl,
-      points: achievements.points,
-      createdAt: achievements.createdAt,
-    })
-    .from(userAchievements)
-    .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
-    .where(eq(userAchievements.externalUserId, userId))
-    .orderBy(desc(userAchievements.unlockedAt))
+  const [rows, [{ count }]] = await Promise.all([
+    db
+      .select({
+        id: achievements.id,
+        name: achievements.name,
+        description: achievements.description,
+        iconUrl: achievements.iconUrl,
+        points: achievements.points,
+        createdAt: achievements.createdAt,
+      })
+      .from(userAchievements)
+      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.externalUserId, userId))
+      .orderBy(desc(userAchievements.unlockedAt))
+      .limit(perPage)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(userAchievements)
+      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.externalUserId, userId)),
+  ])
 
-  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
+  return c.json(
+    {
+      data: rows,
+      error: null,
+      meta: {
+        total: count,
+        page,
+        perPage,
+        totalPages: totalPages(count, perPage),
+      },
+    },
+    200,
+  )
 })
 
 // ─── GET /{userId}/progress ───────────────────────────────────────────────────
@@ -176,7 +201,7 @@ const userEventsRoute = createRoute({
   path: '/{userId}/events',
   tags: ['users'],
   security: [{ ApiKey: [] }],
-  request: { params: UserIdParamSchema },
+  request: { params: UserIdParamSchema, query: PaginationQuerySchema },
   responses: {
     200: {
       content: {
@@ -184,11 +209,11 @@ const userEventsRoute = createRoute({
           schema: z.object({
             data: z.array(UserEventDbSchema),
             error: z.null(),
-            meta: z.object({ total: z.number().int() }),
+            meta: PaginationMetaSchema,
           }),
         },
       },
-      description: 'Last 50 events for the user',
+      description: 'Last events for the user',
     },
     401: {
       content: { 'application/json': { schema: ErrorSchema } },
@@ -200,15 +225,35 @@ const userEventsRoute = createRoute({
 usersRouter.openapi(userEventsRoute, async (c) => {
   const db = c.get('db')
   const { userId } = c.req.valid('param')
+  const { page, perPage, offset } = parsePagination(c.req.valid('query'))
 
-  const rows = await db
-    .select()
-    .from(userEvents)
-    .where(eq(userEvents.externalUserId, userId))
-    .orderBy(desc(userEvents.createdAt))
-    .limit(50)
+  const [rows, [{ count }]] = await Promise.all([
+    db
+      .select()
+      .from(userEvents)
+      .where(eq(userEvents.externalUserId, userId))
+      .orderBy(desc(userEvents.createdAt))
+      .limit(perPage)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(userEvents)
+      .where(eq(userEvents.externalUserId, userId)),
+  ])
 
-  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
+  return c.json(
+    {
+      data: rows,
+      error: null,
+      meta: {
+        total: count,
+        page,
+        perPage,
+        totalPages: totalPages(count, perPage),
+      },
+    },
+    200,
+  )
 })
 
 function extractProgress(

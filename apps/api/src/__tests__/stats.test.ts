@@ -1,16 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
-import { createTestApp } from './helpers.js'
+import { createTestApp, chainable } from './helpers.js'
 import { statsRouter } from '../routes/stats.js'
 
 function makeDb(counts: { events: number; achievements: number; users: number }) {
   return {
-    select: vi.fn().mockReturnValue({
-      from: vi
-        .fn()
-        .mockResolvedValueOnce([{ count: counts.events }])
-        .mockResolvedValueOnce([{ count: counts.achievements }])
-        .mockResolvedValueOnce([{ count: counts.users }]),
-    }),
+    select: vi
+      .fn()
+      .mockReturnValueOnce(chainable([{ count: counts.events }]))
+      .mockReturnValueOnce(chainable([{ count: counts.achievements }]))
+      .mockReturnValueOnce(chainable([{ count: counts.users }])),
   }
 }
 
@@ -57,13 +55,11 @@ describe('GET /v1/stats', () => {
 
   it('falls back to 0 when a query returns no rows', async () => {
     const db = {
-      select: vi.fn().mockReturnValue({
-        from: vi
-          .fn()
-          .mockResolvedValueOnce([]) // userEvents — empty
-          .mockResolvedValueOnce([{ count: 5 }])
-          .mockResolvedValueOnce([{ count: 3 }]),
-      }),
+      select: vi
+        .fn()
+        .mockReturnValueOnce(chainable([]))
+        .mockReturnValueOnce(chainable([{ count: 5 }]))
+        .mockReturnValueOnce(chainable([{ count: 3 }])),
     }
     const res = await makeApp(db).request('/')
     const body = (await res.json()) as StatsResponse
@@ -74,13 +70,11 @@ describe('GET /v1/stats', () => {
 
   it('falls back to 0 when a query returns null count', async () => {
     const db = {
-      select: vi.fn().mockReturnValue({
-        from: vi
-          .fn()
-          .mockResolvedValueOnce([{ count: null }]) // userEvents — null
-          .mockResolvedValueOnce([{ count: 5 }])
-          .mockResolvedValueOnce([{ count: 3 }]),
-      }),
+      select: vi
+        .fn()
+        .mockReturnValueOnce(chainable([{ count: null }]))
+        .mockReturnValueOnce(chainable([{ count: 5 }]))
+        .mockReturnValueOnce(chainable([{ count: 3 }])),
     }
     const res = await makeApp(db).request('/')
     const body = (await res.json()) as StatsResponse

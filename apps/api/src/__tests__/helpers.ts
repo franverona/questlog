@@ -9,3 +9,16 @@ export function createTestApp(db: unknown) {
   })
   return app
 }
+
+export function chainable<T>(result: T) {
+  const proxy: unknown = new Proxy({} as object, {
+    get(_, prop) {
+      if (prop === 'then') {
+        return (resolve: (v: T) => void, reject: (e: unknown) => void) =>
+          Promise.resolve(result).then(resolve, reject)
+      }
+      return () => proxy
+    },
+  })
+  return proxy
+}

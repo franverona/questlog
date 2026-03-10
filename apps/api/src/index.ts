@@ -53,7 +53,7 @@ app.doc31('/openapi.json', {
     { name: 'stats', description: 'Aggregate platform statistics' },
   ],
 })
-app.get('/docs', swaggerUI({ url: '/openapi.json' }))
+app.get('/docs', swaggerUI({ url: '/openapi.json', persistAuthorization: true }))
 
 // Authenticated v1 routes
 const v1 = createRouter()

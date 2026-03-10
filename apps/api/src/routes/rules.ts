@@ -1,5 +1,5 @@
 import { rules, achievements } from '@questlog/db'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { createRoute, z } from '@hono/zod-openapi'
 import { createRouter } from '../types.js'
 import {
@@ -7,7 +7,10 @@ import {
   RuleDbSchema,
   CreateRuleOpenAPISchema,
   ErrorSchema,
+  PaginationMetaSchema,
+  PaginationQuerySchema,
 } from '../openapi-components.js'
+import { parsePagination, totalPages } from '../lib/pagination.js'
 
 const IdParamSchema = z.object({ id: z.string() })
 
@@ -20,6 +23,7 @@ const listRoute = createRoute({
   summary: 'List rules',
   method: 'get',
   path: '/',
+  request: { query: PaginationQuerySchema },
   tags: ['rules'],
   security: [{ ApiKey: [] }],
   responses: {
@@ -29,7 +33,7 @@ const listRoute = createRoute({
           schema: z.object({
             data: z.array(RuleWithNameDbSchema),
             error: z.null(),
-            meta: z.object({ total: z.number().int() }),
+            meta: PaginationMetaSchema,
           }),
         },
       },
@@ -44,18 +48,39 @@ const listRoute = createRoute({
 
 rulesRouter.openapi(listRoute, async (c) => {
   const db = c.get('db')
-  const rows = await db
-    .select({
-      id: rules.id,
-      achievementId: rules.achievementId,
-      condition: rules.condition,
-      createdAt: rules.createdAt,
-      achievementName: achievements.name,
-    })
-    .from(rules)
-    .innerJoin(achievements, eq(rules.achievementId, achievements.id))
+  const { page, perPage, offset } = parsePagination(c.req.valid('query'))
+  const [rows, [{ count }]] = await Promise.all([
+    db
+      .select({
+        id: rules.id,
+        achievementId: rules.achievementId,
+        condition: rules.condition,
+        createdAt: rules.createdAt,
+        achievementName: achievements.name,
+      })
+      .from(rules)
+      .innerJoin(achievements, eq(rules.achievementId, achievements.id))
+      .limit(perPage)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(rules)
+      .innerJoin(achievements, eq(rules.achievementId, achievements.id)),
+  ])
 
-  return c.json({ data: rows, error: null, meta: { total: rows.length } }, 200)
+  return c.json(
+    {
+      data: rows,
+      error: null,
+      meta: {
+        total: count,
+        page,
+        perPage,
+        totalPages: totalPages(count, perPage),
+      },
+    },
+    200,
+  )
 })
 
 // ─── GET /{id} ────────────────────────────────────────────────────────────────

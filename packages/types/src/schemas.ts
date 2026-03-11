@@ -50,7 +50,7 @@ export const AchievementSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1),
   description: z.string().nullable().optional(),
-  iconUrl: z.string().url().nullable().optional(),
+  iconUrl: z.url().nullable().optional(),
   points: z.number().int().nonnegative(),
   createdAt: z.date().or(z.string()),
 })
@@ -60,7 +60,7 @@ export type Achievement = z.infer<typeof AchievementSchema>
 export const CreateAchievementSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  iconUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  iconUrl: z.url('Must be a valid URL').optional().or(z.literal('')),
   points: z.number().int().nonnegative(),
 })
 
@@ -130,3 +130,10 @@ export const LeaderboardEntrySchema = z.object({
 })
 
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>
+
+// Webhooks
+
+export const CreateWebhookSchema = z.object({
+  url: z.url(),
+  secret: z.string().optional(),
+})

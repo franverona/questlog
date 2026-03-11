@@ -61,7 +61,7 @@ export const userAchievements = pgTable(
 export const webhooks = pgTable('webhooks', {
   id: uuid('id').primaryKey().defaultRandom(),
   url: text('url').notNull(),
-  secret: text('secret'), // used to sign the payload (HMAC-SHA256)
+  secret: text('secret').notNull(), // used to sign the payload (HMAC-SHA256)
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 

@@ -133,7 +133,6 @@ export const RuleDbSchema = z
 export const CreateRuleOpenAPISchema = z
   .object({
     achievementId: z
-      .string()
       .uuid('Achievement ID must be a valid UUID')
       .openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     condition: ConditionOpenAPISchema,
@@ -203,3 +202,30 @@ export const LeaderboardEntryDbSchema = z
     total_points: z.number().int().nonnegative().openapi({ example: 150 }),
   })
   .openapi('LeaderboardEntry')
+
+// Webhooks
+
+export const WebhookEntryDbSchema = z
+  .object({
+    id: z.uuid().openapi({ example: 'c1d2e3f4-a5b6-7890-cdef-012345678901' }),
+    url: z.url().openapi({ example: 'https://api.company.com/webhook' }),
+    createdAt: z.date().openapi({ example: '2024-01-15T10:30:00.000Z' }),
+  })
+  .openapi('WebhookEntry')
+
+export const CreateWebhookOpenApiSchema = z
+  .object({
+    url: z.url().openapi({ example: 'https://api.company.com/webhook' }),
+  })
+  .openapi('CreateWebhook')
+
+export const CreateWebhookResponseSchema = z
+  .object({
+    id: z.uuid().openapi({ example: 'c1d2e3f4-a5b6-7890-cdef-012345678901' }),
+    url: z.url().openapi({ example: 'https://api.company.com/webhook' }),
+    secret: z
+      .string()
+      .openapi({ example: '1b613972be1f2d7ebf4792efd3aef698e127cda891fe8ea73c51a8e19504dc53' }),
+    createdAt: z.date().openapi({ example: '2024-01-15T10:30:00.000Z' }),
+  })
+  .openapi('CreateWebhookResponse')

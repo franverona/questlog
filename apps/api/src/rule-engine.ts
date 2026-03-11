@@ -1,7 +1,8 @@
 import type { Db } from '@questlog/db'
-import { rules, userAchievements, userEvents, achievements } from '@questlog/db'
+import { rules, userAchievements, userEvents, achievements, webhooks } from '@questlog/db'
 import { eq, inArray } from 'drizzle-orm'
 import type { Condition } from '@questlog/types'
+import { sign } from './lib/webhook.js'
 
 export type Achievement = {
   id: string
@@ -143,6 +144,28 @@ export async function evaluateRules(userId: string, db: Db): Promise<Achievement
     .select()
     .from(achievements)
     .where(inArray(achievements.id, uniqueToUnlock))
+
+  // 7. Tell webhooks (fire-and-forget)
+  const webhookUrls = await db.select().from(webhooks)
+  const payload = {
+    event: 'achievement.unlocked',
+    user_id: userId,
+    achievements: newlyUnlocked,
+    timestamp: new Date().toISOString(),
+  }
+  const body = JSON.stringify(payload)
+  void Promise.allSettled(
+    webhookUrls.map((w) =>
+      fetch(w.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(w.secret ? { 'X-Webhook-Signature': sign(body, w.secret) } : {}),
+        },
+        body,
+      }),
+    ),
+  )
 
   return newlyUnlocked
 }

@@ -1,6 +1,6 @@
 {
-  "id": "c39dc18d-0003-4921-b5e3-d661daeadd82",
-  "prevId": "ae392d0c-03b3-4338-9376-c4e8c5183398",
+  "id": "98371cac-be64-4bae-b294-3102040b7876",
+  "prevId": "c39dc18d-0003-4921-b5e3-d661daeadd82",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -339,7 +339,7 @@
           "name": "secret",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -352,7 +352,13 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "webhooks_url_unique": {
+          "name": "webhooks_url_unique",
+          "nullsNotDistinct": false,
+          "columns": ["url"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

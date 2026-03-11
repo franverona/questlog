@@ -91,6 +91,10 @@ const createWebhookRoute = createRoute({
       content: { 'application/json': { schema: ErrorSchema } },
       description: 'Missing or invalid API key',
     },
+    409: {
+      content: { 'application/json': { schema: ErrorSchema } },
+      description: 'Duplicated URL',
+    },
   },
 })
 
@@ -100,15 +104,28 @@ webhooksRouter.openapi(createWebhookRoute, async (c) => {
 
   const secret = crypto.randomBytes(32).toString('hex')
 
-  const [row] = await db
-    .insert(webhooks)
-    .values({
-      url: body.url,
-      secret,
-    })
-    .returning()
-
-  return c.json({ data: row, error: null, meta: null }, 201)
+  try {
+    const [row] = await db
+      .insert(webhooks)
+      .values({
+        url: body.url,
+        secret,
+      })
+      .returning()
+    return c.json({ data: { ...row, secret }, error: null, meta: null }, 201)
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && err.code === '23505') {
+      return c.json(
+        {
+          data: null,
+          error: { message: 'A webhook for this URL already exists', code: 'CONFLICT' },
+          meta: null,
+        },
+        409,
+      )
+    }
+    throw err
+  }
 })
 
 // ─── DELETE /{id} ─────────────────────────────────────────────────────────────

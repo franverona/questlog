@@ -174,10 +174,10 @@ export const UnlockedAchievementSchema = z
 
 export const ProgressItemDbSchema = z
   .object({
-    achievement_id: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
-    achievement_name: z.string().openapi({ example: 'Login Streak' }),
-    achievement_icon_url: z.string().nullable().openapi({ example: null }),
-    current_count: z.number().int().nonnegative().openapi({ example: 3 }),
+    achievementId: z.uuid().openapi({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+    achievementName: z.string().openapi({ example: 'Login Streak' }),
+    achievementIconUrl: z.string().nullable().openapi({ example: null }),
+    currentCount: z.number().int().nonnegative().openapi({ example: 3 }),
     threshold: z.number().int().positive().openapi({ example: 7 }),
     percent: z.number().min(0).max(100).openapi({ example: 43 }),
   })

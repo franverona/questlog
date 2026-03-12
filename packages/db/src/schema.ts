@@ -58,6 +58,13 @@ export const userAchievements = pgTable(
   ],
 )
 
+export const webhooks = pgTable('webhooks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  url: text('url').notNull().unique(),
+  secret: text('secret').notNull(), // used to sign the payload (HMAC-SHA256)
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
 // Relations
 
 export const achievementsRelations = relations(achievements, ({ many }) => ({

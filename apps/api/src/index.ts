@@ -12,6 +12,7 @@ import { achievementsRouter } from './routes/achievements.js'
 import { rulesRouter } from './routes/rules.js'
 import { statsRouter } from './routes/stats.js'
 import { createRouter } from './types.js'
+import { webhooksRouter } from './routes/webhooks.js'
 
 const databaseUrl = process.env.DATABASE_URL
 if (!databaseUrl) {
@@ -51,6 +52,7 @@ app.doc31('/openapi.json', {
     { name: 'users', description: 'Per-user achievements, progress, and event history' },
     { name: 'leaderboard', description: 'Top users ranked by total achievement points' },
     { name: 'stats', description: 'Aggregate platform statistics' },
+    { name: 'webhooks', description: 'Connect third-party apis via webhooks' },
   ],
 })
 app.get('/docs', swaggerUI({ url: '/openapi.json', persistAuthorization: true }))
@@ -66,6 +68,7 @@ v1.route('/leaderboard', leaderboardRouter)
 v1.route('/achievements', achievementsRouter)
 v1.route('/rules', rulesRouter)
 v1.route('/stats', statsRouter)
+v1.route('/webhooks', webhooksRouter)
 
 app.route('/v1', v1)
 

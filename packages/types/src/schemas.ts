@@ -111,10 +111,10 @@ export type ApiResponse<T> =
 // ─── Progress ─────────────────────────────────────────────────────────────────
 
 export const ProgressItemSchema = z.object({
-  achievement_id: z.uuid(),
-  achievement_name: z.string(),
-  achievement_icon_url: z.string().nullable(),
-  current_count: z.number().int().nonnegative(),
+  achievementId: z.uuid(),
+  achievementName: z.string(),
+  achievementIconUrl: z.string().nullable(),
+  currentCount: z.number().int().nonnegative(),
   threshold: z.number().int().positive(),
   percent: z.number().min(0).max(100),
 })

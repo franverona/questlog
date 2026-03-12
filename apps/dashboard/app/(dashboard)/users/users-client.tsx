@@ -150,17 +150,17 @@ export function UsersClient() {
             </CardHeader>
             <CardContent className="space-y-3">
               {userData.progress.map((p) => (
-                <div key={p.achievement_id} className="flex items-center gap-4">
-                  {p.achievement_icon_url ? (
-                    <Image src={p.achievement_icon_url} alt="" width={32} height={32} />
+                <div key={p.achievementId} className="flex items-center gap-4">
+                  {p.achievementIconUrl ? (
+                    <Image src={p.achievementIconUrl} alt="" width={32} height={32} />
                   ) : (
                     <div className="bg-accent w-10 h-10 rounded-md" />
                   )}
                   <div className="flex-1">
                     <div className="flex justify-between text-sm mb-1">
-                      <span>{p.achievement_name}</span>
+                      <span>{p.achievementName}</span>
                       <span className="text-muted-foreground">
-                        {p.current_count} / {p.threshold}
+                        {p.currentCount} / {p.threshold}
                       </span>
                     </div>
                     <Progress value={p.percent} />

@@ -160,10 +160,10 @@ usersRouter.openapi(userProgressRoute, async (c) => {
   const progressMap = new Map<
     string,
     {
-      achievement_id: string
-      achievement_name: string
-      achievement_icon_url: string | null
-      current_count: number
+      achievementId: string
+      achievementName: string
+      achievementIconUrl: string | null
+      currentCount: number
       threshold: number
       percent: number
     }
@@ -265,10 +265,10 @@ function extractProgress(
   map: Map<
     string,
     {
-      achievement_id: string
-      achievement_name: string
-      achievement_icon_url: string | null
-      current_count: number
+      achievementId: string
+      achievementName: string
+      achievementIconUrl: string | null
+      currentCount: number
       threshold: number
       percent: number
     }
@@ -281,10 +281,10 @@ function extractProgress(
     const existing = map.get(achievementId)
     if (!existing || percent > existing.percent) {
       map.set(achievementId, {
-        achievement_id: achievementId,
-        achievement_name: achievementName,
-        achievement_icon_url: achievementIconUrl,
-        current_count: current,
+        achievementId: achievementId,
+        achievementName: achievementName,
+        achievementIconUrl: achievementIconUrl,
+        currentCount: current,
         threshold,
         percent,
       })

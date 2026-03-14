@@ -10,7 +10,7 @@ updates:
     ignore:
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "eslint/js"
+      - dependency-name: "@eslint/js"
         update-types: ["version-update:semver-major"]
     groups:
       production-dependencies:

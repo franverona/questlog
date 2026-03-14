@@ -1,5 +1,9 @@
 version: 2
 
+ignore:
+  - dependency-name: "eslint"
+    update-types: ["version-update:semver-major"]
+
 updates:
   - package-ecosystem: 'npm'
     directory: '/'
